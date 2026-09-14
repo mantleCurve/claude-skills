@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Agra · Delhi · Varanasi — Winter Edition, Planned</title>
+<meta name="description" content="A living itinerary: real distances, trains, flights, fares, ride estimates, traffic, weather and budget for 10 days through Agra, Delhi and Varanasi.">
+<meta name="theme-color" content="#0a0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0907'/%3E%3Ccircle cx='18' cy='32' r='6' fill='%23f28c28'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23e8dcc6'/%3E%3Ccircle cx='46' cy='32' r='6' fill='%233aa7b8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700;800;900&family=DM+Serif+Display:ital@0;1&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{--bg:#0a0907;--ink:#f3e9d8;--ink2:rgba(243,233,216,.86);--ink3:rgba(243,233,216,.64);--line:rgba(232,220,198,.16);--cream:#e8dcc6;--saffron:#f28c28;--teal:#3aa7b8;--gold:#e0b45a;--serif:"DM Serif Display","Playfair Display",Georgia,serif;--sans:Bitter,"Roboto Slab",Georgia,serif;--script:Kalam,"Segoe Script",cursive;--mono:Bitter,"Roboto Slab",monospace;--ease:cubic-bezier(.19,1,.22,1);--w:min(1240px,100% - 2*clamp(18px,4vw,64px))}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:var(--sans);font-weight:500;font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}button,select,input{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer}
+::selection{background:var(--saffron);color:#0a0907}
+.mono{font-family:var(--mono);font-size:.95em;font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.eyebrow{font-size:14px;letter-spacing:.36em;text-transform:uppercase;color:var(--ink2);font-weight:700}
+.eyebrow.rule{display:flex;align-items:center;gap:14px}.eyebrow.rule::before{content:"";width:34px;height:1px;background:var(--saffron)}
+h2{font-family:var(--serif);font-weight:400;font-size:clamp(48px,6.4vw,92px);line-height:1;letter-spacing:-.01em;margin:14px 0 22px;color:var(--cream);text-shadow:0 6px 30px rgba(0,0,0,.6)}
+h2 em{font-family:var(--script);font-style:normal;font-weight:700;color:var(--saffron);font-size:1.12em;letter-spacing:0}
+.script{font-family:var(--script);font-weight:700;color:var(--saffron);line-height:.95;text-shadow:0 4px 14px rgba(0,0,0,.6)}
+section{position:relative;width:var(--w);margin:0 auto;padding:clamp(64px,9vw,120px) 0}
+section+section::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--line) 20%,var(--line) 80%,transparent)}
+.lead{max-width:56ch;font-size:clamp(18px,1.6vw,23px);font-weight:500;color:var(--ink)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;border:1px solid var(--line);font-size:14px;font-weight:700;color:var(--ink2);white-space:nowrap;background:rgba(10,9,7,.5);backdrop-filter:blur(8px)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--c,var(--saffron))}
+.warn{color:#f6b26b}.ok{color:#8fd3a8}.bad{color:#f28c8c}
+main{position:relative;z-index:2}
+
+/* ─── poster atmosphere ─── */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg .b1{position:absolute;inset:-12%;background:url(img/backdrop.jpg) center/cover;opacity:.85;filter:saturate(1.15) brightness(.8);will-change:transform}
+.bg .b2{position:absolute;inset:0;background:url(img/stone.jpg) center/640px 120px;opacity:.16;mix-blend-mode:overlay}
+.bg .b3{position:absolute;inset:0;background:radial-gradient(70% 60% at 50% 15%,rgba(120,90,50,.26),transparent 70%),radial-gradient(50% 40% at 88% 80%,rgba(58,167,184,.10),transparent 70%),linear-gradient(180deg,rgba(10,9,7,.25),rgba(10,9,7,.8))}
+.bg .vig{position:absolute;inset:0;box-shadow:inset 0 0 22vmax rgba(0,0,0,.85)}
+#embers{position:fixed;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen}
+.grain{position:fixed;inset:-50%;z-index:40;pointer-events:none;opacity:.055;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1.2s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-2%)}100%{transform:translate(0,0)}}
+
+/* dioramas float free, no boxes */
+.dio{position:absolute;pointer-events:none;filter:drop-shadow(0 40px 50px rgba(0,0,0,.7));will-change:transform;transform:translate3d(0,0,0)}
+.dio img{width:100%;height:auto;display:block}
+.dio.tilt{pointer-events:auto;cursor:grab;transform-style:preserve-3d;transition:filter .5s}
+.dio.tilt:hover{filter:drop-shadow(0 50px 60px rgba(0,0,0,.75)) brightness(1.06)}
+
+/* controls bar */
+.bar{position:sticky;top:0;z-index:30;background:rgba(10,9,7,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.bar .in{width:var(--w);margin:0 auto;display:flex;align-items:center;gap:14px 22px;padding:10px 0;flex-wrap:wrap}
+.bar .brand{font-family:var(--serif);font-weight:400;font-size:24px;margin-right:auto;letter-spacing:.14em;color:var(--cream)}
+.bar .brand b{color:var(--saffron);font-weight:400}
+.bar .brand span{font-family:var(--script);font-weight:700;font-size:26px;color:var(--saffron);letter-spacing:0;margin-left:10px;text-transform:none}
+.ctl{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--ink2)}
+.ctl label{letter-spacing:.2em;text-transform:uppercase;font-size:12px;font-weight:700;color:var(--ink3)}
+.ctl input[type=date],.ctl select{background:transparent;border:0;border-bottom:1px solid var(--line);padding:4px 2px;color:var(--ink);font-size:16px;font-weight:700;outline:0;color-scheme:dark}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.seg button{padding:7px 14px;font-size:14px;font-weight:700;letter-spacing:.06em;color:var(--ink2);transition:all .25s}
+.seg button.on{background:var(--cream);color:#0a0907}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:99px}
+.stepper button{width:32px;height:30px;font-size:20px;color:var(--ink2)}.stepper b{font-weight:800;min-width:24px;text-align:center;font-size:16px}
+.bar nav{display:flex;gap:22px;overflow-x:auto;scrollbar-width:none;font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);width:100%}
+.bar nav a{text-decoration:none;padding:6px 0}.bar nav a:hover{color:var(--cream)}
+
+/* ─── hero: the poster header, unboxed ─── */
+.hero{padding-top:clamp(40px,6vw,80px);min-height:auto;overflow:visible}
+.hero .top{display:grid;grid-template-columns:120px 1fr 260px;gap:20px;align-items:start}
+.tags{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink2);line-height:1.9;font-weight:700;padding-top:14px}
+.tags b{color:var(--saffron);font-weight:800}.tags i{display:block;width:34px;height:1px;background:var(--saffron);margin-top:6px}
+.head{text-align:center;min-width:0}
+.head .eyebrow{letter-spacing:.6em}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(48px,6.6vw,96px);line-height:1;letter-spacing:-.005em;margin:14px 0 16px;color:var(--cream);text-shadow:0 8px 40px rgba(0,0,0,.65);white-space:nowrap}
+.hero h1 .d{display:inline-block;width:.16em;height:.16em;border-radius:50%;vertical-align:middle;margin:0 .22em;transform:translateY(-.08em)}
+.hero .nights{font-size:clamp(16px,1.9vw,22px);letter-spacing:.4em;text-transform:uppercase;color:var(--cream);font-weight:800}
+.hero .nights i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--cream);margin:0 12px;vertical-align:middle}
+.hero .sub{margin-top:12px;font-size:14px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:var(--ink2)}
+.hero .dep{margin-top:14px;font-family:var(--script);font-size:clamp(28px,3.2vw,42px);color:var(--gold);font-weight:700}
+.stamp{font-family:var(--script);font-weight:700;color:var(--saffron);line-height:.95;text-align:center;text-shadow:0 3px 12px rgba(0,0,0,.6);transform:rotate(-12deg);transform-origin:center;font-size:clamp(22px,2.3vw,30px);padding:14px 34px 0 0}
+.stamp u{display:block;width:60%;height:2px;margin:6px auto 0;background:var(--saffron);text-decoration:none;border-radius:2px;transform:rotate(3deg)}
+.hero .stage{position:relative;height:clamp(320px,54vw,720px);margin-top:clamp(10px,2vw,30px)}
+.hero .stage.empty{height:0;margin:0}.hero .stage.empty .tag{display:none}
+.hero .stage .dio.agra{left:1%;top:8%;width:28%}
+.hero .stage .dio.delhi{left:31%;top:-3%;width:38%}
+.hero .stage .dio.varanasi{right:1%;top:24%;width:29%}
+.hero .stage .tag{position:absolute;font-family:var(--script);font-weight:700;color:var(--cream);font-size:clamp(26px,3.2vw,42px);transform:rotate(-7deg);text-shadow:0 4px 14px rgba(0,0,0,.8);pointer-events:none}
+.hero .stage .tag.a{left:4%;bottom:14%}.hero .stage .tag.d{left:40%;bottom:0}.hero .stage .tag.v{right:1%;bottom:18%}
+.hero .lead{margin:10px auto 0;text-align:center;max-width:60ch}
+.route{margin-top:clamp(26px,4vw,50px);position:relative}
+.route svg{width:100%;height:auto;display:block;overflow:visible}
+.route .dash{stroke:var(--saffron);stroke-width:1.5;fill:none;stroke-dasharray:6 6;animation:march 1.4s linear infinite}
+@keyframes march{to{stroke-dashoffset:-24}}
+.route text{font-family:var(--sans);font-weight:700;fill:var(--ink2);font-size:14px;letter-spacing:.14em;text-transform:uppercase}
+.route text.k{font-family:var(--mono);font-weight:700;fill:var(--ink2);font-size:14px;letter-spacing:.02em;text-transform:none}
+.route text.city{font-family:var(--serif);font-weight:400;font-size:27px;fill:var(--cream);letter-spacing:0;text-transform:none}
+.live{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:26px;font-size:17px;font-weight:600;color:var(--ink);justify-content:center}
+.live div{display:flex;align-items:center;gap:10px}
+.live b{font-family:var(--serif);font-size:34px;font-weight:400;color:var(--cream)}
+.live .dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.live small{font-size:14px;font-weight:700;color:var(--ink2);letter-spacing:.06em}
+
+/* map */
+.mapwrap{position:relative;width:100%;height:clamp(420px,70vh,720px);border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 40px 90px rgba(0,0,0,.6)}
+#leafmap{position:absolute;inset:0;background:#0d0c0a}
+.leaflet-tile{filter:invert(1) hue-rotate(190deg) brightness(.66) contrast(.92) saturate(.3) sepia(.45)}
+.leaflet-container{font-family:var(--sans)}
+.leaflet-popup-content-wrapper{background:rgba(16,14,11,.94);color:var(--ink);border-radius:12px;border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.leaflet-popup-tip{background:rgba(16,14,11,.94)}
+.leaflet-popup-content{margin:14px 16px;font-size:16px;font-weight:600;line-height:1.5}
+.leaflet-popup-content b{font-family:var(--serif);font-size:22px;font-weight:400;display:block;margin-bottom:4px;color:var(--cream)}
+.leaflet-popup-content .k{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--ink2);display:block;margin-top:6px}
+.leaflet-control-attribution{background:rgba(10,9,7,.7)!important;color:var(--ink3)!important;font-size:12px}
+.leaflet-control-attribution a{color:var(--ink2)!important}
+.leaflet-bar a{background:rgba(16,14,11,.9)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.maplegend{position:absolute;left:14px;bottom:14px;z-index:500;display:flex;flex-wrap:wrap;gap:8px}
+.mapstats{display:flex;flex-wrap:wrap;gap:12px 44px;margin-top:22px;font-size:16px;color:var(--ink2)}
+.mapstats b{font-family:var(--serif);font-weight:400;font-size:42px;color:var(--cream);display:block;line-height:1}
+.mapstats small{display:block;font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);margin-top:6px}
+
+/* legs */
+.leg{display:grid;grid-template-columns:200px 1fr;gap:20px 40px;padding:30px 0;border-top:1px dashed var(--line)}
+.leg .who{font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;color:var(--cream)}
+.leg .who small{display:block;font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink2);margin-top:8px}
+.leg .who .km{display:block;font-family:var(--mono);font-weight:700;font-size:15px;color:var(--ink2);margin-top:10px}
+.opt{display:grid;grid-template-columns:44px 1fr auto;gap:8px 18px;align-items:center;padding:14px 0;border-top:1px dashed var(--line);cursor:pointer;transition:opacity .3s}
+.opt:first-child{border-top:0}.opt.off{opacity:.42}
+.opt .ic{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink2)}
+.opt.on .ic{background:var(--saffron);border-color:var(--saffron);color:#0a0907}
+.opt .ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.opt .nm{font-size:21px;font-weight:800;color:var(--cream)}
+.opt .meta{grid-column:2;font-size:16px;font-weight:600;color:var(--ink2)}.opt .meta .mono{color:var(--ink)}
+.opt .note{grid-column:2;font-size:15.5px;font-weight:500;color:var(--ink3);max-width:60ch}
+.opt .fare{font-family:var(--serif);font-weight:400;font-size:32px;text-align:right;line-height:1;color:var(--cream)}
+.opt .fare small{display:block;font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);margin-top:6px}
+.opt .cls{grid-column:2;display:flex;gap:8px;margin-top:4px}
+.opt .cls button{padding:6px 14px;border-radius:99px;border:1px solid var(--line);font-size:14px;font-weight:700;color:var(--ink2)}
+.opt .cls button.on{background:var(--cream);color:#0a0907;border-color:var(--cream)}
+
+/* itinerary, grouped by city with a floating diorama */
+.cityhead{position:relative;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:30px;padding:70px 0 20px;min-height:340px}
+.cityhead .dio{position:relative;justify-self:end;width:min(100%,440px)}
+.cityhead .dio.big{width:min(100%,520px)}
+.cityhead.noart{grid-template-columns:1fr;min-height:0;padding-top:50px}
+.cityhead h3{font-family:var(--serif);font-weight:400;font-size:clamp(64px,8vw,112px);line-height:.95;margin:8px 0 6px;color:var(--cream);text-shadow:0 8px 40px rgba(0,0,0,.65)}
+.cityhead .cd{font-size:16px;font-weight:800;letter-spacing:.4em;text-transform:uppercase;color:var(--cream)}
+.cityhead .cd::after{content:"";display:block;width:40px;height:1px;background:var(--cream);opacity:.7;margin-top:14px}
+.cityhead .tagline{display:block;margin-top:22px;font-size:clamp(36px,4.2vw,56px);color:var(--cream);transform:rotate(-4deg);transform-origin:left}
+.cityhead .facts{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px 26px;font-size:17px;font-weight:700;color:var(--ink2)}
+.cityhead .facts b{color:var(--cream);font-weight:500}
+.day{display:grid;grid-template-columns:220px 1fr;gap:20px 40px;padding:36px 0;border-top:1px dashed var(--line)}
+.day .dl{position:sticky;top:120px;align-self:start}
+.day .dl .dn{font-family:var(--serif);font-weight:400;font-size:76px;line-height:.9;color:var(--cream)}
+.day .dl .dn small{font-family:var(--sans);font-weight:800;font-size:14px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink2);display:block;margin-bottom:8px}
+.day .dl .dt{margin-top:10px;font-size:17px;font-weight:700;color:var(--ink)}
+.day .dl .dw{display:grid;gap:8px;margin-top:14px;font-size:19px;font-weight:800;color:var(--cream)}
+.day .dl .dw div{display:flex;align-items:center;gap:10px}.day .dl .dw span{font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)}
+.day .dl .dw svg{width:26px;height:26px;fill:none;stroke:var(--saffron);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.day .dl .temp{margin-top:18px}.day .dl .temp svg{width:100%;max-width:220px;height:auto;display:block;overflow:visible}.day .dl .temp svg text{font-family:var(--mono);font-weight:700;font-size:11px;fill:var(--ink2)}
+.day .dl .temp small{display:block;margin-top:6px;font-size:13.5px;font-weight:600;color:var(--ink3);line-height:1.4}
+.day h3{font-family:var(--serif);font-weight:800;font-size:34px;margin:0 0 12px;color:var(--cream)}
+.it{display:grid;grid-template-columns:76px 34px 1fr;gap:6px 14px;padding:14px 0;border-top:1px dashed var(--line);align-items:start;position:relative;transition:background .3s;border-radius:8px}
+.it:hover,.it.hot{background:rgba(232,220,198,.035)}
+.it .t{font-family:var(--mono);font-weight:700;font-size:16px;color:var(--ink);padding-top:3px}
+.it .ic{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink2);margin-top:-1px}
+.it .ic svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.it.sight .ic{border-color:var(--c);color:var(--c)}
+.it .lb{font-size:20px;color:var(--cream);font-weight:700}.it .lb a{text-decoration:none;border-bottom:1px solid var(--line)}
+.it .m{grid-column:3;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:16px;font-weight:700;color:var(--ink2)}
+.chip{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}.chip svg{width:20px;height:20px;flex:none;fill:none;stroke:var(--saffron);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.chip b{color:var(--cream)}
+.it.sight .chip svg{stroke:var(--c)}
+.it .m span b{color:var(--cream);font-weight:700}
+.it .x{grid-column:3;font-size:16px;font-weight:500;color:var(--ink2);max-width:64ch;display:none}.it.open .x{display:block}
+.it .alert{grid-column:3;font-size:15.5px;font-weight:600;padding:8px 12px;border-radius:8px;background:rgba(246,178,107,.1);border:1px solid rgba(246,178,107,.3);color:#f6b26b}
+.daytot{grid-column:1/-1;margin-top:12px;display:flex;flex-wrap:wrap;gap:8px 28px;font-size:16px;font-weight:700;color:var(--ink2)}
+.daytot b{color:var(--cream);font-weight:500}
+
+/* air */
+.chip.aq svg{stroke:var(--aqc)}.chip.aq span{color:var(--aqc)}
+.aqrow svg{stroke:var(--aqc)!important}.aqrow b{color:var(--aqc)}
+.alert.fog{background:rgba(232,220,198,.08);border-color:rgba(232,220,198,.25);color:var(--cream);display:flex;gap:10px;align-items:flex-start}.alert.fog svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--cream);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.aircities{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:36px}
+.aircity .cn,.airlive .cn{font-family:var(--serif);font-size:34px}.airlive .cn small{font-family:var(--sans);font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink3);margin-left:8px}
+.aircity .big,.airlive .big{font-family:var(--serif);font-size:64px;line-height:1;margin:6px 0}.aircity .big small,.airlive .big small{font-family:var(--sans);font-size:17px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.aircity .sub{margin:4px 0 10px;font-size:15px;color:var(--ink2)}
+.aircity>svg,.airlive>svg{width:100%;height:auto;display:block;overflow:visible;margin:6px 0 10px}.aircity>svg text,.airlive>svg text{font-family:var(--sans);font-weight:700;font-size:11px;fill:var(--ink3)}.aircity>svg text.lab{font-size:12px;fill:var(--cream)}.aircity>svg text.lab.bad{fill:#f26a5a}.airlive>svg text{font-size:16px}
+.aircity ul{list-style:none;margin:0;padding:0;font-size:16px;font-weight:600;color:var(--ink2)}.aircity li{padding:8px 0;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.aircity li b{color:var(--cream);text-align:right;font-weight:800}
+.aircity p,.airlive p{font-size:15.5px;font-weight:500;color:var(--ink2);margin:12px 0 0;line-height:1.5}
+.airdays{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:14px}
+.airday{padding:14px 10px 12px;border-radius:12px;background:rgba(10,9,7,.5);border:1px solid var(--line);border-top:5px solid var(--aqc);text-align:center;display:grid;gap:3px}
+.airday small{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}.airday b{font-family:var(--serif);font-size:36px;line-height:1;color:var(--aqc)}.airday span{font-size:13px;font-weight:700;color:var(--ink2)}.airday em{font-style:normal;font-size:12.5px;font-weight:600;color:var(--ink3)}
+.mask{margin-top:12px}.maskrow{display:grid;grid-template-columns:150px 76px 1fr;gap:12px;padding:12px 0;border-top:1px dashed var(--line);font-size:15.5px;font-weight:600;color:var(--ink2);align-items:start}.maskrow b{font-weight:800}.maskrow.ok b{color:#8fd3a8}.maskrow.warn b{color:var(--saffron)}.maskrow.bad b{color:#f26a5a}
+.airlives{display:grid;gap:22px;margin-top:12px}.airlive .big{font-size:48px}
+/* weather */
+.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart .ax{stroke:var(--line)}.chart text{font-family:var(--mono);font-weight:700;font-size:14px;fill:var(--ink2)}
+.chart .sel{fill:rgba(232,220,198,.06)}.chart path{fill:none;stroke-width:1.6}.chart path.lo{stroke-dasharray:3 4;opacity:.7}
+.chart .mo{cursor:pointer}.chart .mo:hover rect{fill:rgba(232,220,198,.05)}
+.wx{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:34px}
+.wx .cn{font-family:var(--serif);font-weight:400;font-size:34px}
+.wx .big{font-family:var(--serif);font-weight:400;font-size:66px;line-height:1;margin:6px 0;color:var(--cream)}.wx .big small{font-size:28px;color:var(--ink3);font-weight:700}
+.wx ul{list-style:none;margin:10px 0 0;padding:0;font-size:16.5px;font-weight:600;color:var(--ink2)}
+.wx li{padding:9px 0;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.wx li b{font-weight:800;color:var(--cream);text-align:right}
+.best{margin-top:40px}
+.best .months{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:12px}
+.best .months div{height:46px;border-radius:6px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:14px;color:#0a0907;cursor:pointer;transition:transform .3s var(--ease);position:relative}
+.best .months div:hover{transform:translateY(-3px)}.best .months div.on::after{content:"";position:absolute;inset:-3px;border:1px solid var(--cream);border-radius:9px}
+.lists{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px}
+.lists ul{list-style:none;padding:0;margin:12px 0 0;font-size:17.5px;font-weight:600;color:var(--ink2)}
+.lists li{padding:8px 0;border-top:1px dashed var(--line)}.lists li::before{content:"—";color:var(--saffron);margin-right:10px}
+
+/* traffic */
+.slider{display:flex;align-items:center;gap:16px;margin:20px 0 30px;flex-wrap:wrap}
+.slider input[type=range]{flex:1;min-width:220px;accent-color:var(--saffron)}
+.slider .now{font-family:var(--serif);font-weight:400;font-size:54px;min-width:120px;line-height:1;color:var(--cream)}
+.gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+.gauge .cn{font-family:var(--serif);font-weight:400;font-size:34px}
+.gauge .sp{font-family:var(--serif);font-weight:400;font-size:62px;line-height:1;margin:6px 0 4px;color:var(--cream)}.gauge .sp small{font-size:22px;color:var(--ink3);font-weight:700}
+.gauge .lvl{font-size:14px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:8px}.gauge .lvl svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gauge .bar24{display:flex;gap:2px;height:36px;align-items:flex-end;margin:12px 0}
+.gauge .bar24 i{flex:1;background:var(--ink3);opacity:.5;border-radius:2px 2px 0 0;transition:all .3s}.gauge .bar24 i.on{background:var(--saffron);opacity:1}
+.gauge p{font-size:16px;font-weight:500;color:var(--ink2);margin:8px 0 12px}
+.gauge table{width:100%;border-collapse:collapse;font-size:16px;font-weight:600}
+.gauge td{padding:7px 0;border-top:1px dashed var(--line);color:var(--ink2)}.gauge td:last-child{text-align:right;font-family:var(--mono);color:var(--cream)}
+
+/* budget */
+.bud{display:grid;grid-template-columns:1fr 1.2fr;gap:50px}
+.choice{margin-bottom:24px}.choice .eyebrow{margin-bottom:10px}.choice .seg button{padding:9px 16px}
+.chk{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:17.5px;font-weight:600;color:var(--ink2);cursor:pointer;border-top:1px dashed var(--line)}
+.chk input{accent-color:var(--saffron);width:20px;height:20px}.chk span:last-child{margin-left:auto;font-family:var(--mono);font-weight:700;font-size:15px}
+table.tot{width:100%;border-collapse:collapse;font-size:18px;font-weight:600}
+table.tot td{padding:11px 0;border-top:1px dashed var(--line);color:var(--ink2)}table.tot td:last-child{text-align:right;font-family:var(--mono);color:var(--cream)}
+table.tot tr.sum td{border-top:1px solid var(--cream);font-family:var(--serif);font-weight:400;font-size:38px;color:var(--cream);padding-top:16px}
+table.tot tr.sum td:last-child{font-family:var(--serif)}
+.pp{font-size:17px;font-weight:600;color:var(--ink2);margin-top:12px}
+
+/* checklist + footer */
+.todo{columns:2;column-gap:40px}
+.todo label{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-top:1px dashed var(--line);font-size:18px;font-weight:600;color:var(--ink2);break-inside:avoid;cursor:pointer}
+.todo input{accent-color:var(--saffron);margin-top:5px;width:20px;height:20px}.todo label.done{color:var(--ink3);text-decoration:line-through}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border-radius:99px;border:1px solid var(--line);font-size:14px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--cream);transition:all .3s;background:rgba(10,9,7,.5)}
+.btn:hover{background:var(--cream);color:#0a0907}
+footer{position:relative;margin-top:60px;overflow:hidden}
+footer .sky{position:relative;height:clamp(160px,22vw,300px);background:url(img/skyline.jpg) center bottom/cover no-repeat;mask-image:linear-gradient(180deg,transparent,#000 40%);-webkit-mask-image:linear-gradient(180deg,transparent,#000 40%)}
+footer .fin{width:var(--w);margin:0 auto;padding:0 0 50px;position:relative}
+footer .closing{position:relative;margin-top:-60px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+footer .closing .l{font-size:15px;font-weight:800;letter-spacing:.45em;text-transform:uppercase;color:var(--ink);line-height:1.9}
+footer .closing .l::after{content:"";display:block;width:34px;height:1px;background:var(--saffron);margin-top:10px}
+footer .closing .r{font-size:15px;font-weight:800;letter-spacing:.4em;text-transform:uppercase;color:var(--ink);text-align:right}
+footer .tri{display:flex;width:56px;height:3px;margin:8px 0 0 auto}footer .tri i{flex:1}footer .tri i:nth-child(1){background:#ff9933}footer .tri i:nth-child(2){background:#eee}footer .tri i:nth-child(3){background:#138808}
+footer .stampb{font-family:var(--script);font-weight:700;color:var(--saffron);font-size:clamp(32px,3.6vw,50px);line-height:.95;text-align:center;transform:rotate(-10deg)}
+footer .src{margin-top:50px;border-top:1px solid var(--line);padding-top:26px;font-size:15.5px;font-weight:500;color:var(--ink2)}
+footer ol{columns:2;column-gap:40px;padding-left:18px;margin:12px 0 20px}footer li{padding:3px 0;break-inside:avoid}footer a{color:var(--ink2);text-decoration:none}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);z-index:60;padding:12px 18px;border-radius:99px;background:rgba(20,17,13,.95);border:1px solid var(--line);font-size:15px;font-weight:700;opacity:0;transition:all .4s var(--ease);pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.rv{opacity:0;transform:translateY(24px);transition:opacity 1s var(--ease),transform 1s var(--ease)}.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .wx,.gauges,.bud,.lists,.cityhead,.aircities,.c2{grid-template-columns:1fr}
+  .airdays{grid-template-columns:repeat(5,1fr)}.maskrow{grid-template-columns:1fr;gap:4px}
+  .cityhead .dio{justify-self:center;order:-1;width:min(100%,360px)}.cityhead{min-height:0;padding-top:50px}
+  .leg,.day{grid-template-columns:1fr}.day .dl{position:static}.day .dl .dn{font-size:44px}
+  .todo,footer ol{columns:1}
+  .hero .top{grid-template-columns:1fr}.tags{display:none}.stamp{transform:rotate(-4deg);padding-top:0}
+  .hero h1{white-space:normal;font-size:clamp(40px,11vw,64px)}
+  .hero .stage{height:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
+  .hero .stage .dio{position:relative;left:auto!important;right:auto!important;top:auto!important;width:100%!important}
+  .hero .stage .dio.delhi{grid-column:1/-1;width:82%!important;margin:0 auto}.hero .stage .tag{display:none}
+  .bar .in{gap:10px 14px}.bar nav{gap:12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .opt{grid-template-columns:34px 1fr}.opt .fare{grid-column:2;text-align:left;margin-top:6px}
+  .it{grid-template-columns:64px 28px 1fr}.route text.city{font-size:15px}
+  footer .closing{margin-top:-20px}footer .stampb{width:100%;text-align:left;transform:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.grain{display:none}}
+@media print{.bar,.mapwrap,.bg,#embers,.grain,.toast,.btn,.slider,.route,.live,.dio{display:none!important}body{background:#fff;color:#111}section{padding:24px 0}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><div class="b1" data-p="-10"></div><div class="b2"></div><div class="b3"></div><div class="vig"></div></div>
+<canvas id="embers" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="bar">
+  <div class="in">
+    <div class="brand">A<b>·</b>D<b>·</b>V<span>planned</span></div>
+    <div class="ctl"><label>Depart</label><input type="date" id="start"></div>
+    <div class="ctl"><label>Travellers</label><span class="stepper"><button id="tm">−</button><b id="tv">2</b><button id="tp">+</button></span></div>
+    <div class="ctl"><label>Tickets</label><span class="seg" id="cit"><button class="on" data-v="0">Indian</button><button data-v="1">Foreign</button></span></div>
+    <div class="ctl"><label>Show in</label><span class="seg" id="cur"><button class="on" data-v="INR">₹</button><button data-v="USD">$</button></span></div>
+    <nav><a href="#map">Map</a><a href="#legs">Between cities</a><a href="#days">Day by day</a><a href="#weather">Weather</a><a href="#air">Air</a><a href="#traffic">Traffic & rides</a><a href="#budget">Budget</a><a href="#book">Bookings</a></nav>
+  </div>
+</div>
+
+<main>
+<section class="hero">
+  <div class="top">
+    <div class="tags">History<br>Culture<br>Food<br>People<br>Stories<br><b>You</b><i></i></div>
+    <div class="head">
+      <div class="eyebrow">A journey through</div>
+      <h1 id="heroTitle">Agra<i class="d" style="background:var(--saffron)"></i>Delhi<i class="d" style="background:var(--teal)"></i>Varanasi</h1>
+      <div class="nights">9 Nights<i></i>10 Days</div>
+      <div class="sub">Three cities. A thousand stories.</div>
+      <div class="dep" id="sub"></div>
+    </div>
+    <div class="stamp">Same<br>Roads<br>New<br>Perspective<u></u></div>
+  </div>
+  <div class="stage" id="stage">
+    <div class="dio tilt agra" data-p="14" data-city="agra"><img src="img/agra.webp" onerror="this.closest('.dio').remove();document.getElementById('stage').classList.toggle('empty',!document.querySelector('#stage .dio'))" alt="Agra diorama: Taj Mahal and Agra Fort" fetchpriority="high"></div>
+    <div class="dio tilt delhi" data-p="8" data-city="delhi"><img src="img/delhi.webp" onerror="this.closest('.dio').remove();document.getElementById('stage').classList.toggle('empty',!document.querySelector('#stage .dio'))" alt="Delhi diorama: India Gate, Red Fort, Qutub Minar, Humayun's Tomb" fetchpriority="high"></div>
+    <div class="dio tilt varanasi" data-p="18" data-city="varanasi"><img src="img/varanasi.webp" onerror="this.closest('.dio').remove();document.getElementById('stage').classList.toggle('empty',!document.querySelector('#stage .dio'))" alt="Varanasi diorama: the ghats at dusk"></div>
+    <span class="tag a">Timeless Beauty</span><span class="tag d">Layers of History</span><span class="tag v">Spiritual Rhythm</span>
+  </div>
+  <p class="lead">The winter edition. Ten days from the last weekend of November into the first week of December: cool mornings, warm afternoons, the year's worst air, and fog that can swallow the Taj until ten. Every hop measured from real coordinates, every fare and timetable checked, every hour rated for smog. Change the date up top and it all re-plans.</p>
+  <div class="route" id="route"></div>
+  <div class="live" id="live"></div>
+</section>
+
+<section id="map">
+  <div class="eyebrow rule">01 · The map</div>
+  <h2>Four cities, one loop, <em>same roads</em></h2>
+  <p class="lead">Flights drawn as great circles, trains along the line. Click any marker. Hover an itinerary item further down and the map follows.</p>
+  <div class="mapwrap" style="margin-top:34px"><div id="leafmap"></div><div class="maplegend"><span class="pill"><i style="--c:var(--saffron)"></i>Flight</span><span class="pill"><i style="--c:var(--teal)"></i>Train</span><span class="pill"><i style="--c:var(--gold)"></i>Sight</span><span class="pill"><i style="--c:#fff"></i>Where you sleep</span></div></div>
+  <div class="mapstats" id="mapstats"></div>
+</section>
+
+<section id="legs">
+  <div class="eyebrow rule">02 · Between cities</div>
+  <h2>Trains, flights, <em>and the choice</em></h2>
+  <p class="lead">Pick the option you'd take on each leg. Fares are current published ranges; the budget below follows your choices. Times shown are the scheduled ones.</p>
+  <div id="legList" style="margin-top:34px"></div>
+</section>
+
+<section id="days">
+  <div class="eyebrow rule">03 · Day by day</div>
+  <h2>Ten days, <em>hour by hour</em></h2>
+  <p class="lead">Each ride shows road distance from coordinates, time at that hour's typical traffic, and an estimated Uber or cab fare. Each sight shows the entry fee for your ticket type and the temperature to expect when you're there. Closed-day clashes are flagged from your departure date.</p>
+  <div id="dayList" style="margin-top:10px"></div>
+</section>
+
+<section id="weather">
+  <div class="eyebrow rule">04 · Weather & best time</div>
+  <h2>What the sky <em>will do</em> to your plan</h2>
+  <p class="lead">Monthly normals computed from three years of daily station data. Click a month on the chart or the strip to re-plan the trip for it.</p>
+  <div class="chart" id="chart" style="margin-top:30px"></div>
+  <div class="wx" id="wx"></div>
+  <div class="best"><div class="eyebrow">Best time to go</div><div class="months" id="months"></div><p class="lead" id="verdict" style="margin-top:14px;font-size:15px"></p></div>
+  <div class="lists"><div><div class="eyebrow">In your month</div><ul id="fest"></ul></div><div><div class="eyebrow">Pack</div><ul id="pack"></ul></div></div>
+</section>
+
+<section id="air">
+  <div class="eyebrow rule">05 · Air</div>
+  <h2>Breathing in <em>smog season</em></h2>
+  <p class="lead">Late November into December is the dirtiest air of the year in the north. This is not a reason to cancel. It is a reason to plan the hours: mornings and nights are the worst, early afternoon is the cleanest, and a fitted N95 turns a very poor day into a workable one.</p>
+  <p class="lead" id="airVerdict" style="margin-top:18px;font-size:clamp(20px,1.9vw,26px)"></p>
+  <div class="aircities" id="airCities"></div>
+  <div class="eyebrow" style="margin-top:44px">Your ten days, expected CPCB AQI at dawn</div>
+  <div class="airdays" id="airDays"></div>
+  <div class="grid c2" style="margin-top:44px"><div><div class="eyebrow">What each level means for you</div><div class="mask" id="airMask"></div></div><div><div class="eyebrow">Live right now</div><div class="airlives" id="airLive"></div></div></div>
+</section>
+
+<section id="traffic">
+  <div class="eyebrow rule">06 · Traffic & rides</div>
+  <h2>How slow the city is <em>right now</em></h2>
+  <p class="lead">Drag the clock. Speeds are typical weekday profiles; fares use each city's UberGo-class rates with surge rising as speeds fall.</p>
+  <div class="slider"><span class="now" id="clock">08:00</span><input type="range" id="hour" min="0" max="23" step="1" value="8"><span class="pill" id="nowpill"></span></div>
+  <div class="gauges" id="gauges"></div>
+</section>
+
+<section id="budget">
+  <div class="eyebrow rule">07 · Budget</div>
+  <h2>What it <em>actually</em> costs</h2>
+  <div class="bud" style="margin-top:30px">
+    <div>
+      <div class="choice"><div class="eyebrow">Where you sleep · 9 nights</div><span class="seg" id="hotel"></span></div>
+      <div class="choice"><div class="eyebrow">How you eat · 10 days</div><span class="seg" id="food"></span></div>
+      <div class="choice"><div class="eyebrow">Extras, per person</div><div id="extras"></div></div>
+      <p class="lead" style="font-size:13px;color:var(--ink3)">Flights and trains use the middle of the current fare range for the options you picked above. Rides sum every itinerary hop at its scheduled hour. Entry fees follow the ticket type in the top bar. A 10% buffer is added because India.</p>
+    </div>
+    <div><table class="tot" id="tot"></table><div class="pp" id="pp"></div></div>
+  </div>
+</section>
+
+<section id="book">
+  <div class="eyebrow rule">08 · Bookings</div>
+  <h2>Do these <em>in this order</em></h2>
+  <div class="todo" id="todo" style="margin-top:26px"></div>
+  <div style="margin-top:30px;display:flex;gap:12px;flex-wrap:wrap"><button class="btn" onclick="window.print()">Print this plan</button><button class="btn" id="share">Copy link with my settings</button></div>
+</section>
+</main>
+
+<footer>
+  <div class="sky" data-p="-4"></div>
+  <div class="fin">
+    <div class="closing">
+      <div class="l">Different places<br>A deeper you</div>
+      <div class="stampb">More<br>Meaningful<br>Travel</div>
+      <div class="r">Incredible India<div class="tri"><i></i><i></i><i></i></div></div>
+    </div>
+    <div class="src"><div class="eyebrow">Sources checked Sept 2026</div><ol id="src"></ol><div>Fares and timetables change. Ride fares are estimates from published rate cards and traffic profiles, not live quotes. Verify on IRCTC, the airline, and the ride app before you book.</div></div>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+(() => {
+const T=window.TRIP, $=(s,c=document)=>c.querySelector(s), $$=(s,c=document)=>[...c.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], MONL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const ICON={flight:'M21 16v-2l-8-5V3.5a1.5 1.5 0 00-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z',train:'M6 3h12a2 2 0 012 2v10a3 3 0 01-3 3H7a3 3 0 01-3-3V5a2 2 0 012-2zM4 10h16M8 21l1-3M16 21l-1-3M8 14h.01M16 14h.01',car:'M5 17h14M6 17l1.5-5h9L18 17M4 17v2h3v-2M17 17v2h3v-2M8 12l1-3h6l1 3',walk:'M13 4a1 1 0 100-2 1 1 0 000 2zM10 22l2-7-2-2 1-5 3 1 2 3h2M9 14l-2 4M14 15l2 3 1 4',sight:'M12 3l2 5h5l-4 3.5 1.5 5.5-4.5-3-4.5 3L9 11.5 5 8h5z',meal:'M6 3v8a2 2 0 002 2v8M8 3v6M10 3v6M17 3c-2 0-3 3-3 6v3h3v9',free:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 8v4l3 2',metro:'M12 3C8 3 5 4 5 7v9a3 3 0 003 3h8a3 3 0 003-3V7c0-3-3-4-7-4zM5 11h14M8 21l-1 1M16 21l1 1M9 15h.01M15 15h.01',
+thermo:'M14 14.8V5a2 2 0 10-4 0v9.8a4 4 0 104 0zM12 10v6',sunrise:'M12 2v3M4.9 7.9l1.4 1.4M19.1 7.9l-1.4 1.4M2 17h20M6 17a6 6 0 0112 0M9 8l3-3 3 3',sunset:'M12 2v3M4.9 7.9l1.4 1.4M19.1 7.9l-1.4 1.4M2 17h20M6 17a6 6 0 0112 0M9 5l3 3 3-3',
+clock:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 7v5l3 2',road:'M4 20L9 4h6l5 16M12 4v3M12 10v3M12 16v4',ticket:'M3 8a2 2 0 002 2 2 2 0 010 4 2 2 0 00-2 2v2h18v-2a2 2 0 00-2-2 2 2 0 010-4 2 2 0 002-2V6H3zM14 6v12',
+money:'M3 6h18v12H3zM12 15a3 3 0 100-6 3 3 0 000 6zM6 9h.01M18 15h.01',gauge:'M12 20a8 8 0 110-16 8 8 0 010 16zM12 12l4-4M9 16h6',rain:'M7 15a5 5 0 010-10 6 6 0 0111.5 2A4 4 0 0117 15H7zM8 18l-1 3M12 18l-1 3M16 18l-1 3',
+wind:'M3 8h10a2 2 0 100-2M3 12h15a2 2 0 110 2M3 16h9a2 2 0 110 2',pin:'M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11zM12 12a2 2 0 100-4 2 2 0 000 4',calendar:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',bed:'M3 18V8M3 12h18v6M3 16h18M7 12V9h4v3'};
+const chip=(k,txt)=>`<span class="chip">${svg(k)}<span>${txt}</span></span>`;
+const svg=k=>`<svg viewBox="0 0 24 24"><path d="${ICON[k]||ICON.free}"/></svg>`;
+
+/* ───── state ───── */
+const S={start:new Date((T.defaultStart||'2026-10-17')+'T00:00'), n:T.travellers, cit:0, cur:"INR", hour:8, hotel:1, food:1, extras:new Set([0,1]), legs:{}, cls:{}, done:new Set()};
+try{ const u=new URLSearchParams(location.search); if(u.get('d')) S.start=new Date(u.get('d')+'T00:00'); if(u.get('n')) S.n=+u.get('n'); if(u.get('c')) S.cit=+u.get('c'); if(u.get('cur')) S.cur=u.get('cur'); if(u.get('h')) S.hotel=+u.get('h'); if(u.get('f')) S.food=+u.get('f'); if(u.get('l')) u.get('l').split(',').forEach(p=>{const [k,v]=p.split(':'); S.legs[k]=+v;}); const d=localStorage.getItem('adv.done'); if(d) S.done=new Set(JSON.parse(d)); }catch(e){}
+T.legs.forEach(l=>{ if(S.legs[l.id]==null) S.legs[l.id]=0; S.cls[l.id]=0; });
+const month=()=>S.start.getMonth();
+const dayDate=n=>{ const d=new Date(S.start); d.setDate(d.getDate()+n); return d; };
+
+/* ───── geo ───── */
+const R=6371, rad=x=>x*Math.PI/180;
+function hav(a,b){ const dLat=rad(b.lat-a.lat), dLng=rad(b.lng-a.lng); const h=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
+function gc(a,b,n=48){ const φ1=rad(a.lat),λ1=rad(a.lng),φ2=rad(b.lat),λ2=rad(b.lng); const d=2*Math.asin(Math.sqrt(Math.sin((φ2-φ1)/2)**2+Math.cos(φ1)*Math.cos(φ2)*Math.sin((λ2-λ1)/2)**2)); const pts=[]; for(let i=0;i<=n;i++){ const f=i/n, A=Math.sin((1-f)*d)/Math.sin(d), B=Math.sin(f*d)/Math.sin(d); const x=A*Math.cos(φ1)*Math.cos(λ1)+B*Math.cos(φ2)*Math.cos(λ2), y=A*Math.cos(φ1)*Math.sin(λ1)+B*Math.cos(φ2)*Math.sin(λ2), z=A*Math.sin(φ1)+B*Math.sin(φ2); pts.push([Math.atan2(z,Math.sqrt(x*x+y*y))/rad(1), Math.atan2(y,x)/rad(1)]); } return pts; }
+const SIGHT=Object.fromEntries(T.sights.map(s=>[s.id,s]));
+function pt(key,cityKey){ if(key==='home') return T.home; if(key==='homeAirport') return T.home.airport; if(SIGHT[key]) return SIGHT[key]; const c=T.cities[cityKey]; return c&&c[key]?c[key]:null; }
+function cityOf(key,ctx){ return SIGHT[key]?SIGHT[key].city:ctx; }
+
+/* ───── models ───── */
+function rideModel(cityKey){ return cityKey==='blr'?{...T.homeRide,speeds:T.homeRide.speeds}:{...T.cities[cityKey].ride,speeds:T.cities[cityKey].traffic.speeds}; }
+function ride(cityKey,km,hour,fixed){ const m=rideModel(cityKey); const sp=m.speeds[clamp(Math.round(hour),0,23)%24]; const mx=Math.max(...m.speeds), mn=Math.min(...m.speeds); const cong=(mx-sp)/(mx-mn); const mins=Math.round(km/sp*60+4); const surge=1+(m.peak-1)*cong; const fare=fixed?fixed:[Math.round(Math.max(m.min,(m.base+m.perKm*km+m.perMin*mins)*surge)/10)*10, null]; return {km,mins,sp,cong,fare,surge}; }
+function tempAt(cityKey,hour,mm){ const c=cityKey==='blr'?T.homeClimate:T.cities[cityKey].climate; const m=mm==null?month():mm; const lo=c.lo[m],hi=c.hi[m]; const h=((hour%24)+24)%24; let f; if(h>=5&&h<=15) f=.5-.5*Math.cos(Math.PI*(h-5)/10); else { const x=h>15?h-15:h+9; f=.5+.5*Math.cos(Math.PI*x/14); } return Math.round(lo+(hi-lo)*f); }
+function sun(lat,lng,date){ const J=Math.floor((date-new Date(date.getFullYear(),0,0))/864e5); const decl=23.44*Math.PI/180*Math.sin(2*Math.PI*(284+J)/365); const B=2*Math.PI*(J-81)/364; const eot=9.87*Math.sin(2*B)-7.53*Math.cos(B)-1.5*Math.sin(B); const ha=Math.acos((Math.sin(-0.833*Math.PI/180)-Math.sin(rad(lat))*Math.sin(decl))/(Math.cos(rad(lat))*Math.cos(decl)))*180/Math.PI/15; const noon=12-lng/15-eot/60+5.5; return {rise:noon-ha,set:noon+ha}; }
+const hm=h=>{ const H=Math.floor(h), M=Math.round((h-H)*60); return `${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}`; };
+const money=(v,unit=true)=>{ if(v==null) return ''; if(S.cur==='USD') return (unit?'$':'')+Math.round(v/T.currency.usd).toLocaleString('en-IN'); return (unit?'₹':'')+Math.round(v).toLocaleString('en-IN'); };
+const range=(a,b)=>b?`${money(a)}–${money(b,false)}`:money(a);
+const mid=f=>f[1]?(f[0]+f[1])/2:f[0];
+const legFare=l=>{ const o=l.options[S.legs[l.id]]; return o.classes?o.fare[S.cls[l.id]]:mid(o.fare); };
+const dur=m=>m>=60?`${Math.floor(m/60)}h ${m%60?m%60+'m':''}`.trim():`${m}m`;
+const AQL=['','Good','Moderate','Unhealthy for some','Poor','Very poor'];
+/* CPCB AQI model: monthly city baseline × winter hourly curve */
+function aqiAt(cityKey,mm,hour){ const c=T.cities[cityKey]; if(!c||!c.air) return null; const base=c.air.monthly[mm]; const k=(T.airHourly||[])[clamp(Math.round(hour),0,23)%24]||1; const winter=mm>=9||mm<=1; return Math.round(base*(winter?k:1+(k-1)*.4)); }
+function aqiCat(v){ return v==null?['—','']:v<=50?['Good','ok']:v<=100?['Satisfactory','ok']:v<=200?['Moderate','warn']:v<=300?['Poor','warn']:v<=400?['Very poor','bad']:['Severe','bad']; }
+const aqiCol=v=>v<=50?'#8fd3a8':v<=100?'#cfe08a':v<=200?'#e0b45a':v<=300?'#f28c28':v<=400?'#f26a5a':'#c94c8a';
+const fogLevel=(cityKey,mm)=>((T.cities[cityKey]||{}).air||{}).fog?.[mm]||0;
+
+/* ───── hero: route ribbon ───── */
+function renderRoute(){
+  const place=k=>k==='blr'?T.home:T.cities[k];
+  const seq=[{c:place(T.legs[0].from),lbl:`Day ${T.legs[0].day}`}]; const seenCity=new Set();
+  T.legs.forEach(l=>{ const c=place(l.to); let lbl; if(l.to==='blr') lbl=`Day ${l.day}`; else if(seenCity.has(l.to)||T.legs.filter(x=>x.to===l.to).length===1){ lbl=T.cities[l.to].days; } else { lbl=`Day ${l.day}`; } seenCity.add(l.to); seq.push({c,lbl,leg:l}); });
+  const W=1000,H=150; const xs=seq.map((_,i)=>60+i*(W-120)/(seq.length-1));
+  let path='',nodes='',labels='';
+  seq.forEach((n,i)=>{ const x=xs[i],y=90; if(i){ const px=xs[i-1]; const o=n.leg.options[S.legs[n.leg.id]]; const km=Math.round(hav(seq[i-1].c,n.c)*(o.mode==='flight'?1:1.25)); const mx=(px+x)/2; const fl=o.mode==='flight'; path+=`<path class="dash" d="M${px} ${y} Q${mx} ${fl?y-70:y-14} ${x} ${y}" style="stroke:${fl?'var(--saffron)':'var(--teal)'}"/>`; labels+=`<text class="k" x="${mx}" y="${fl?y-52:y-22}" text-anchor="middle">${km.toLocaleString('en-IN')} km · ${dur(o.mins)}</text>`; }
+    const home=n.c===T.home; nodes+=`<g class="node"><circle cx="${x}" cy="${y}" r="5" fill="${home?'#fff':'var(--saffron)'}"/><text class="city" x="${x}" y="${y+34}" text-anchor="middle">${n.c.name}</text><text x="${x}" y="${y+52}" text-anchor="middle">${n.lbl}</text></g>`; });
+  $('#route').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${path}${labels}${nodes}</svg>`;
+  $('#sub').textContent=`departing ${DOW[S.start.getDay()]} ${S.start.getDate()} ${MONL[month()]} ${S.start.getFullYear()}`;
+}
+
+/* ───── live weather ───── */
+const WMO={0:'clear',1:'mostly clear',2:'partly cloudy',3:'overcast',45:'fog',48:'fog',51:'drizzle',53:'drizzle',55:'drizzle',61:'light rain',63:'rain',65:'heavy rain',80:'showers',81:'showers',82:'heavy showers',95:'thunderstorm',96:'thunderstorm',99:'thunderstorm'};
+async function live(){
+  const el=$('#live'); el.innerHTML=Object.values(T.cities).map(c=>`<div style="--c:${c.accent}"><span class="dot"></span><span><b>…</b><br><small>${c.name.toUpperCase()} · loading live</small></span></div>`).join('');
+  await Promise.all(Object.values(T.cities).map(async (c,i)=>{ try{ const [w,a]=await Promise.all([fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lng}&current=temperature_2m,weather_code,relative_humidity_2m&timezone=Asia%2FKolkata`).then(r=>r.json()),fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${c.lat}&longitude=${c.lng}&current=us_aqi,pm2_5&timezone=Asia%2FKolkata`).then(r=>r.json())]); const aqi=a.current.us_aqi; const cls=aqi<=50?'ok':aqi<=100?'':aqi<=150?'warn':'bad'; el.children[i].innerHTML=`<span class="dot"></span><span><b>${Math.round(w.current.temperature_2m)}°</b> ${WMO[w.current.weather_code]||'—'} · humidity ${w.current.relative_humidity_2m}%<br><small>${c.name.toUpperCase()} · NOW · AQI <span class="${cls}">${aqi} ${aqi<=50?'good':aqi<=100?'moderate':aqi<=150?'unhealthy for sensitive':aqi<=200?'unhealthy':'very unhealthy'}</span> · PM2.5 ${a.current.pm2_5}</small></span>`; }catch(e){ el.children[i].innerHTML=`<span class="dot"></span><span><b>—</b><br><small>${c.name.toUpperCase()} · live weather unavailable</small></span>`; } }));
+}
+
+/* ───── map ───── */
+let map, layerSights={}, layerLegs=[];
+function renderMap(){
+  if(!window.L){ $('#leafmap').innerHTML='<p style="padding:20px;color:var(--ink3)">Map library failed to load.</p>'; return; }
+  if(!map){ map=L.map('leafmap',{scrollWheelZoom:false,zoomControl:true,attributionControl:true}); L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19}).addTo(map);
+    const all=[T.home,...Object.values(T.cities)]; map.fitBounds(all.map(c=>[c.lat,c.lng]),{padding:[40,40]});
+    for(const c of Object.values(T.cities)){ L.circleMarker([c.stay.lat,c.stay.lng],{radius:6,color:'#fff',weight:1.5,fillColor:'#fff',fillOpacity:.9}).addTo(map).bindPopup(`<b>${c.stay.name}</b>Base in ${c.name} · ${c.days}<span class="k">${c.stay.lat.toFixed(4)}, ${c.stay.lng.toFixed(4)}</span>`); L.circleMarker([c.hub.lat,c.hub.lng],{radius:4,color:c.accent,weight:1.5,fillColor:'#000',fillOpacity:1}).addTo(map).bindPopup(`<b>${c.hub.name}</b>${Math.round(hav(c.hub,c.stay)*1.3)} km to where you sleep`); if(c.rail) L.circleMarker([c.rail.lat,c.rail.lng],{radius:4,color:'var(--teal)',weight:1.5,fillColor:'#000',fillOpacity:1}).addTo(map).bindPopup(`<b>${c.rail.name}</b>${Math.round(hav(c.rail,c.stay)*1.3)} km to where you sleep`); }
+    L.circleMarker([T.home.airport.lat,T.home.airport.lng],{radius:5,color:'#fff',weight:1.5,fillColor:'#000',fillOpacity:1}).addTo(map).bindPopup(`<b>${T.home.airport.name}</b>Home airport`);
+    for(const s of T.sights){ const c=T.cities[s.city]; const m=L.circleMarker([s.lat,s.lng],{radius:5,color:c.accent,weight:1.5,fillColor:c.accent,fillOpacity:.75}).addTo(map); m.bindPopup(()=>`<b>${s.name}</b>${s.blurb}<span class="k">Entry ${s.fee[S.cit]?money(s.fee[S.cit]):'free'} · ${s.hours} · closed: ${s.closed}<br>${Math.round(hav(c.stay,s)*1.3)} km from your base · ~${dur(s.dur)} visit</span>`); layerSights[s.id]=m; }
+  }
+  layerLegs.forEach(l=>map.removeLayer(l)); layerLegs=[];
+  for(const leg of T.legs){ const o=leg.options[S.legs[leg.id]]; const a=leg.from==='blr'?T.home.airport:T.cities[leg.from][o.fromPt]||T.cities[leg.from], b=leg.to==='blr'?T.home.airport:T.cities[leg.to][o.toPt]||T.cities[leg.to]; const pts=o.mode==='flight'?gc(a,b):[[a.lat,a.lng],[b.lat,b.lng]]; const pl=L.polyline(pts,{color:o.mode==='flight'?'#f28c28':'#3aa7b8',weight:2,opacity:.9,dashArray:o.mode==='flight'?null:'6 6'}).addTo(map); pl.bindPopup(`<b>${o.name}</b>${Math.round(hav(a,b)*(o.mode==='flight'?1:1.25)).toLocaleString('en-IN')} km · ${dur(o.mins)} · ${o.dep}→${o.arr}<span class="k">${range(...o.fare)} per person</span>`); layerLegs.push(pl); }
+  const km=T.legs.reduce((s,leg)=>{ const o=leg.options[S.legs[leg.id]]; const a=leg.from==='blr'?T.home:T.cities[leg.from], b=leg.to==='blr'?T.home:T.cities[leg.to]; return s+hav(a,b)*(o.mode==='flight'?1:1.25); },0);
+  const cityKm=T.days.reduce((s,d)=>s+d.items.filter(i=>i.kind==='ride').reduce((a,i)=>a+hop(i,d).km,0),0);
+  const mins=T.legs.reduce((s,l)=>s+l.options[S.legs[l.id]].mins,0);
+  $('#mapstats').innerHTML=`<div><b>${Math.round(km).toLocaleString('en-IN')}</b><small>km between cities</small></div><div><b>${Math.round(cityKm)}</b><small>km of rides inside cities</small></div><div><b>${dur(mins)}</b><small>in the air and on rails</small></div><div><b>${T.sights.length}</b><small>sights, ${T.sights.filter(s=>!s.fee[0]).length} of them free</small></div>`;
+}
+function focusSight(id){ const m=layerSights[id]; if(!m||!map) return; map.flyTo(m.getLatLng(),13,{duration:1.2}); setTimeout(()=>m.openPopup(),1200); $('#leafmap').scrollIntoView({behavior:'smooth',block:'center'}); }
+
+/* ───── legs ───── */
+function renderLegs(){
+  $('#legList').innerHTML=T.legs.map(leg=>{ const a=leg.from==='blr'?T.home:T.cities[leg.from], b=leg.to==='blr'?T.home:T.cities[leg.to]; const d=dayDate(leg.day); return `<div class="leg"><div class="who">${a.name} → ${b.name}<small>Day ${leg.day} · ${DOW[d.getDay()].slice(0,3)} ${d.getDate()} ${MON[d.getMonth()]}</small><span class="km">${Math.round(hav(a,b)).toLocaleString('en-IN')} km straight line</span></div><div>${leg.options.map((o,i)=>{ const on=S.legs[leg.id]===i; const fri=o.note.includes('except Friday')&&d.getDay()===5; return `<div class="opt ${on?'on':'off'}" data-leg="${leg.id}" data-i="${i}"><div class="ic">${svg(o.mode)}</div><div class="nm">${o.name}</div><div class="fare">${o.classes?money(o.fare[on?S.cls[leg.id]:0]):range(...o.fare)}<small>per person</small></div><div class="meta"><span class="mono">${o.dep} → ${o.arr}</span> · ${dur(o.mins)} · ${Math.round(hav(a,b)*(o.mode==='flight'?1:1.25)).toLocaleString('en-IN')} km${fri?' · <span class="bad">does not run on Fridays — your Day '+leg.day+' is a Friday</span>':''}</div>${o.classes?`<div class="cls">${o.classes.map((c,j)=>`<button class="${S.cls[leg.id]===j?'on':''}" data-cls="${j}">${c} · ${money(o.fare[j])}</button>`).join('')}</div>`:''}<div class="note">${o.note}</div></div>`; }).join('')}</div></div>`; }).join('');
+  $$('#legList .opt').forEach(el=>{ el.addEventListener('click',e=>{ const b=e.target.closest('[data-cls]'); if(b){ S.cls[el.dataset.leg]=+b.dataset.cls; } S.legs[el.dataset.leg]=+el.dataset.i; renderAll(['legs','route','map','budget']); }); });
+}
+
+/* ───── itinerary ───── */
+function hop(it,day){ const ctx=it.cityRef||day.city; const a=pt(it.from,ctx)||T.cities[ctx]||T.home, b=pt(it.to,ctx)||T.cities[ctx]||T.home; const km=Math.round(hav(a,b)*1.3*10)/10; if(it.metro) return {km,mins:Math.round(km/28*60+10),fare:[Math.round(20+km*2),null],metro:true}; return ride(ctx,km,it.t,it.fixed); }
+function renderDays(){
+  const sightsSeen=new Set();
+  const CITYTAG={agra:'Timeless Beauty',delhi:'Layers of History',varanasi:'Spiritual Rhythm'};
+  let prevCity=null; const runLen=i=>{ let n=0; for(let j=i;j<T.days.length&&T.days[j].city===T.days[i].city;j++) n++; return n; };
+  $('#dayList').innerHTML=T.days.map((day,di)=>{ const d=dayDate(day.n); const c=T.cities[day.city]; const dm=d.getMonth();
+    let head=''; if(day.city!==prevCity && runLen(di)>1){ prevCity=day.city; const cl=c.climate, m=dm; const mySights=T.sights.filter(x=>x.city===day.city); const feeSum=mySights.filter(x=>!x.optional).reduce((a,x)=>a+x.fee[S.cit],0); const nDays=T.days.filter(x=>x.city===day.city&&x.items.some(i=>i.kind==='sight')).length;
+      head=`<div class="cityhead"><div><div class="eyebrow rule">${c.days} · ${c.state}</div><h3>${c.name}</h3><div class="cd">${nDays} days</div><span class="script tagline" style="color:var(--cream)">${CITYTAG[day.city]||''}</span><div class="facts">${chip('thermo',`<b>${Math.round(cl.hi[m])}° / ${Math.round(cl.lo[m])}°</b> in ${MONL[m]}`)}${chip('sight',`<b>${mySights.length}</b> sights`)}${chip('ticket',`entry <b>${money(feeSum)}</b> pp`)}${chip('bed',`base <b>${c.stay.name}</b>`)}${c.air?`<span class="chip aq ${aqiCat(c.air.monthly[m])[1]}" style="--aqc:${aqiCol(c.air.monthly[m])}">${svg('wind')}<span>AQI <b>~${c.air.monthly[m]}</b> ${aqiCat(c.air.monthly[m])[0].toLowerCase()} in ${MONL[m]}</span></span>`:''}</div></div><div class="dio tilt ${day.city==='delhi'?'big':''}" data-p="${day.city==='delhi'?6:10}"><img src="img/${day.city}.webp" alt="${c.name} diorama" loading="lazy" onerror="this.closest('.cityhead').classList.add('noart');this.closest('.dio').remove()"></div></div>`; }
+    else if(day.city!==prevCity) prevCity=day.city; let rideCost=0,fees=0,km=0; const rows=day.items.map(it=>{ const t=hm(it.t); const ck=it.cityRef||day.city; const temp=tempAt(ck,it.t,dm); const aq=aqiAt(ck,dm,it.t); const aqc=aqiCat(aq); const aqChip=aq!=null&&['sight','walk','ride','free','meal'].includes(it.kind)?`<span class="chip aq ${aqc[1]}" style="--aqc:${aqiCol(aq)}">${svg('wind')}<span>AQI ~${aq} · ${aqc[0]}</span></span>`:''; let ic=it.kind,lb=it.label||'',meta=[],x='',alert='',cls='';
+      if(it.kind==='sight'){ const s=SIGHT[it.ref]; lb=`<a href="#" data-sight="${s.id}">${it.label||s.name}</a>`; const fee=s.fee[S.cit]; const first=!sightsSeen.has(s.id); sightsSeen.add(s.id); if(first&&!it.short) fees+=fee; meta=[chip('ticket',fee?money(fee):'free entry'),chip('clock','~'+dur(it.short?60:s.dur)),chip('pin',Math.round(hav(c.stay,s)*1.3)+' km from base'),chip('thermo',`${temp}°C at ${t}`),aqChip]; const fg=fogLevel(ck,dm); if(fg>=2&&it.t<9.5) alert+=`<div class="alert fog">${svg('rain')} Fog risk: ${MONL[dm]} mornings in ${c.name} can hide everything until 09:00–10:00. Go anyway, but keep the early afternoon free for a second look.</div>`; x=s.blurb+(s.feeNote?` · ${s.feeNote}`:''); cls=`sight" style="--c:${c.accent}`; const dow=DOW[d.getDay()]; if(s.closed.toLowerCase().includes(dow.toLowerCase())) alert=`<div class="alert">${s.name} is closed on ${dow}s and Day ${day.n} falls on a ${dow}. Shift the departure date, or swap this with another day.</div>`; }
+      else if(it.kind==='ride'){ const h=hop(it,day); km+=h.km; rideCost+=h.fare[0]; ic=it.metro?'metro':'car'; meta=[chip('road',`${h.km} km by road`),chip('clock',dur(h.mins)),chip('gauge',h.metro?'metro, no traffic':h.cong>.6?'<i class="warn">heavy traffic</i>':h.cong>.35?'moderate traffic':'light traffic'),chip('money',`${h.metro?'metro':it.fixed?'fixed cab':'Uber est.'} ${range(...h.fare)}`),chip('thermo',`${temp}°C`),aqChip]; if(!h.metro&&!it.fixed) x=`Estimated at ${t}: ${h.sp} km/h typical speed, surge ×${h.surge.toFixed(2)}. Per-km and per-minute rates for a UberGo-class car in ${ctxName(it,day)}.`; }
+      else if(it.kind==='flight'||it.kind==='train'){ const leg=T.legs.find(l=>l.id===it.ref); const o=leg.options[S.legs[leg.id]]; ic=o.mode; lb=o.name; meta=[chip('clock',`${o.dep} → ${o.arr} · ${dur(o.mins)}`),chip('money',`${money(legFare(leg))} per person`)]; x=o.note; }
+      else { meta=[chip('thermo',`${temp}°C at ${t}`),aqChip]; }
+      return `<div class="it ${cls}" data-kind="${it.kind}"><div class="t">${t}</div><div class="ic">${svg(ic)}</div><div class="lb">${lb}</div><div class="m">${meta.join('')}</div>${x?`<div class="x">${x}</div>`:''}${alert}</div>`; }).join('');
+    const lo=T.cities[day.city].climate.lo[dm], hi=T.cities[day.city].climate.hi[dm]; const sr=sun(c.lat,c.lng,d); const dayAq=aqiAt(day.city,dm,14), dayAqPeak=aqiAt(day.city,dm,7);
+    const spark=(()=>{ const W=220,H=80,L=30,B=16; const yy=v=>B+((hi-v)/(hi-lo||1))*(H-B-18); const pts=[]; for(let h=0;h<=23;h++) pts.push(`${L+h/23*(W-L)},${yy(tempAt(day.city,h,dm))}`);
+      return `<svg viewBox="0 0 ${W} ${H}"><text x="0" y="${B+4}">${Math.round(hi)}°</text><text x="0" y="${H-14}">${Math.round(lo)}°</text>${[6,12,18].map(h=>`<text x="${L+h/23*(W-L)}" y="${H-2}" text-anchor="middle">${h}h</text>`).join('')}<polyline points="${pts.join(' ')}" fill="none" stroke="${c.accent}" stroke-width="2.5"/>${day.items.filter(i=>i.kind==='sight').map(i=>`<circle cx="${L+i.t/23*(W-L)}" cy="${yy(tempAt(day.city,i.t,dm))}" r="4" fill="#fff" stroke="${c.accent}" stroke-width="2"/>`).join('')}</svg>`; })();
+    return `${head}<div class="day"><div class="dl"><div class="dn"><small>Day</small>${day.n}</div><div class="dt">${DOW[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]} · ${c.name}</div><div class="dw"><div>${svg('thermo')}<b>${Math.round(lo)}° – ${Math.round(hi)}°C</b></div><div>${svg('sunrise')}<b>${hm(sr.rise)}</b><span>sunrise</span></div><div>${svg('sunset')}<b>${hm(sr.set)}</b><span>sunset</span></div>${dayAq?`<div class="aqrow" style="--aqc:${aqiCol(dayAqPeak)}">${svg('wind')}<b>${dayAqPeak}</b><span>AQI at dawn</span></div><div class="aqrow" style="--aqc:${aqiCol(dayAq)}">${svg('wind')}<b>${dayAq}</b><span>AQI at 14:00</span></div>`:''}</div><div class="temp">${spark}<small>Temperature through the day. Dots are your sights.</small></div></div><div><h3>${day.title}</h3>${rows}<div class="daytot">${chip('road',`<b>${km.toFixed(0)} km</b> of rides`)}${chip('money',`ride spend <b>≈ ${money(rideCost)}</b>`)}${chip('ticket',`entry fees <b>${money(fees)}</b> per person`)}</div></div></div>`; }).join('');
+  bindMotion();
+  $$('#dayList .it').forEach(el=>{ el.addEventListener('click',e=>{ const a=e.target.closest('[data-sight]'); if(a){ e.preventDefault(); focusSight(a.dataset.sight); return; } el.classList.toggle('open'); }); el.addEventListener('mouseenter',()=>{ const a=$('[data-sight]',el); if(a&&map&&layerSights[a.dataset.sight]) layerSights[a.dataset.sight].setStyle({radius:9}); }); el.addEventListener('mouseleave',()=>{ const a=$('[data-sight]',el); if(a&&map&&layerSights[a.dataset.sight]) layerSights[a.dataset.sight].setStyle({radius:5}); }); });
+}
+function ctxName(it,day){ return it.cityRef==='blr'?T.home.name:T.cities[day.city].name; }
+
+/* ───── weather ───── */
+function renderWeather(){
+  const m=month(); const W=1000,H=300,L=40,Rr=20,Tt=20,B=40; const x=i=>L+i*(W-L-Rr)/11, y=v=>Tt+(45-v)/(45-5)*(H-Tt-B);
+  const cities=Object.values(T.cities);
+  let g=`<rect class="sel" x="${x(m)-(W-L-Rr)/22}" y="${Tt}" width="${(W-L-Rr)/11}" height="${H-Tt-B}" rx="8"/>`;
+  for(let v=10;v<=40;v+=10) g+=`<line class="ax" x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+3}" text-anchor="end">${v}°</text>`;
+  for(const c of cities){ g+=`<path d="M${c.climate.hi.map((v,i)=>`${x(i)},${y(v)}`).join('L')}" stroke="${c.accent}"/><path class="lo" d="M${c.climate.lo.map((v,i)=>`${x(i)},${y(v)}`).join('L')}" stroke="${c.accent}"/>`; }
+  for(let i=0;i<12;i++) g+=`<g class="mo" data-m="${i}"><rect x="${x(i)-(W-L-Rr)/22}" y="${Tt}" width="${(W-L-Rr)/11}" height="${H-Tt-B}" fill="transparent"/><text x="${x(i)}" y="${H-14}" text-anchor="middle" ${i===m?'fill="#f0e6d6"':''}>${MON[i]}</text></g>`;
+  g+=cities.map((c,i)=>`<g transform="translate(${L+i*300},${H+4})"><line x1="0" x2="18" y1="0" y2="0" stroke="${c.accent}" stroke-width="1.6"/><text x="24" y="3">${c.name} high · dashed low</text></g>`).join('');
+  $('#chart').innerHTML=`<svg viewBox="0 0 ${W} ${H+16}">${g}</svg>`;
+  $$('#chart .mo').forEach(el=>el.addEventListener('click',()=>setMonth(+el.dataset.m)));
+  $('#wx').innerHTML=cities.map(c=>{ const cl=c.climate; const d=dayDate({agra:1,delhi:3,varanasi:7}[Object.keys(T.cities).find(k=>T.cities[k]===c)]); const sr=sun(c.lat,c.lng,d); const a=c.aqi[m]; return `<div><div class="cn" style="color:${c.accent}">${c.name}</div><div class="big">${cl.hi[m]}°<small> / ${cl.lo[m]}°</small></div><ul><li>${chip('rain','Rain in '+MONL[m])}<b>${cl.rain[m]} mm${cl.rain[m]>150?' · monsoon':cl.rain[m]<15?' · dry':''}</b></li><li>${chip('wind','Air quality, typical')}<b class="${a>=4?'bad':a===3?'warn':'ok'}">${AQL[a]}</b></li><li>${chip('sunrise','Sunrise on your day')}<b>${hm(sr.rise)}</b></li><li>${chip('sunset','Sunset')}<b>${hm(sr.set)}</b></li><li>${chip('thermo','Feels like')}<b>${cl.hi[m]>=38?'brutal afternoons':cl.hi[m]>=33?'hot, plan mornings':cl.lo[m]<=10?'cold mornings, fine days':'ideal'}</b></li></ul></div>`; }).join('');
+  const score=i=>{ const hi=Math.max(...cities.map(c=>c.climate.hi[i])), rain=Math.max(...cities.map(c=>c.climate.rain[i])), aq=Math.max(...cities.map(c=>c.aqi[i])); let s=5; if(hi>=38) s-=3; else if(hi>=34) s-=1.5; if(rain>150) s-=2; else if(rain>80) s-=1; if(aq>=5) s-=2.5; else if(aq>=4) s-=1.5; return clamp(s,0,5); };
+  const col=s=>s>=4.5?'#8fd3a8':s>=3.5?'#cfe08a':s>=2.5?'#e0b45a':s>=1.5?'#f28c28':'#f28c8c';
+  $('#months').innerHTML=[...Array(12)].map((_,i)=>`<div class="${i===m?'on':''}" data-m="${i}" style="background:${col(score(i))}" title="${MONL[i]}">${MON[i]}</div>`).join('');
+  $$('#months div').forEach(el=>el.addEventListener('click',()=>setMonth(+el.dataset.m)));
+  const s=score(m); $('#verdict').innerHTML=`<b style="color:${col(s)}">${MONL[m]}: ${s>=4.5?'the best time':s>=3.5?'very good':s>=2.5?'workable with care':s>=1.5?'hard going':'avoid if you can'}.</b> ${s>=4?'Cool mornings for the Taj and the boat, warm days, dry skies.':m>=4&&m<=5?'Forty-degree afternoons: do every monument before 10:00 and sleep through the middle of the day.':m>=6&&m<=8?'Monsoon. Varanasi ghats can flood and boats stop; Agra empties out, which has its charm.':m===10||m===11||m===0?'Delhi air is at its worst; keep masks for the city days and enjoy the crisp north Indian winter everywhere else.':'Shoulder season: check each city above.'} October to March is the window; November has the lamps, February the festival.`;
+  $('#fest').innerHTML=T.festivals.filter(f=>f.m===m+1).map(f=>`<li>${f.name}</li>`).join('')||'<li>No major festival clash. Quieter monuments.</li>';
+  const hi=Math.max(...cities.map(c=>c.climate.hi[m])), lo=Math.min(...cities.map(c=>c.climate.lo[m])), rain=Math.max(...cities.map(c=>c.climate.rain[m])), aq=Math.max(...cities.map(c=>c.aqi[m]));
+  const airMax=Math.max(...cities.map(c=>c.air?c.air.monthly[m]:0)); $('#pack').innerHTML=[...T.packing.base,...(hi>=32?T.packing.hot:[]),...(lo<=12?T.packing.cold:[]),...(rain>60?T.packing.wet:[]),...(aq>=4||airMax>200?T.packing.smog:[])].map(p=>`<li>${p}</li>`).join('');
+}
+function setMonth(m){ const d=new Date(S.start); d.setMonth(m); S.start=d; $('#start').value=iso(d); renderAll(); }
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+/* ───── air ───── */
+function renderAir(){
+  const el=$('#air'); if(!el) return;
+  const cities=Object.entries(T.cities).filter(([k,c])=>c.air);
+  const cityDays=k=>T.days.filter(d=>d.city===k).map(d=>dayDate(d.n));
+  const tripAvg=k=>{ const ds=cityDays(k); if(!ds.length) return null; return Math.round(ds.reduce((a,d)=>a+T.cities[k].air.monthly[d.getMonth()],0)/ds.length); };
+  const worst=cities.map(([k])=>[k,tripAvg(k)]).sort((a,b)=>b[1]-a[1])[0];
+  const wc=aqiCat(worst[1]);
+  const advice=v=>v<=100?'No special measures. Enjoy the mornings.':v<=200?'Sensitive travellers wear a mask on long outdoor stretches. Mornings are fine.':v<=300?'Wear an N95 outdoors before 10:00 and after 18:00. Put the long walks between 12:00 and 17:00. Ask for a purifier in the room.':v<=400?'N95 whenever you are outside. Keep monument time to midday. Skip outdoor exertion. Purifier in the room, windows shut.':'Treat outdoors as short exposures only. Reconsider the city days or shift them to midday visits with a fitted mask.';
+  $('#airVerdict').innerHTML=`<b class="${wc[1]}">${T.cities[worst[0]].name} will be the worst air of the trip: CPCB AQI around ${worst[1]}, ${wc[0].toLowerCase()}.</b> ${advice(worst[1])}`;
+  // per city: expected, hourly curve, best window, advice
+  $('#airCities').innerHTML=cities.map(([k,c])=>{ const ds=cityDays(k); const m=(ds[0]||S.start).getMonth(); const base=tripAvg(k)||c.air.monthly[m]; const cat=aqiCat(base); const W=260,H=90,L=0,B=8; const curve=[...Array(24)].map((_,h)=>aqiAt(k,m,h)); const mx=Math.max(...curve), mn=Math.min(...curve); const yy=v=>B+((mx-v)/(mx-mn||1))*(H-B-22); const best=curve.indexOf(mn), worstH=curve.indexOf(mx);
+    const fg=c.air.fog[m]; return `<div class="aircity"><div class="cn" style="color:${c.accent}">${c.name}</div><div class="big" style="color:${aqiCol(base)}">${base}<small> ${cat[0]}</small></div><div class="sub">${chip('calendar',`your dates · ${ds.length?DOW[ds[0].getDay()].slice(0,3)+' '+ds[0].getDate()+' '+MON[ds[0].getMonth()]:''}${ds.length>1?' → '+DOW[ds[ds.length-1].getDay()].slice(0,3)+' '+ds[ds.length-1].getDate()+' '+MON[ds[ds.length-1].getMonth()]:''}`)}</div>
+      <svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="g${k}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${aqiCol(mx)}" stop-opacity=".55"/><stop offset="1" stop-color="${aqiCol(mx)}" stop-opacity="0"/></linearGradient></defs><rect x="${12/23*W}" y="0" width="${5/23*W}" height="${H-14}" fill="rgba(143,211,168,.14)" rx="4"/><path d="M0,${H-14} ${curve.map((v,h)=>`L${h/23*W},${yy(v)}`).join(' ')} L${W},${H-14}Z" fill="url(#g${k})"/><polyline points="${curve.map((v,h)=>`${h/23*W},${yy(v)}`).join(' ')}" fill="none" stroke="${aqiCol(mx)}" stroke-width="3"/>${[0,6,12,18,23].map(h=>`<text x="${h/23*W}" y="${H-1}" text-anchor="${h===0?'start':h===23?'end':'middle'}">${h===23?'24h':h+'h'}</text>`).join('')}<text x="${best/23*W}" y="${yy(mn)-6}" text-anchor="middle" class="lab">${mn} · cleanest</text><text x="${worstH/23*W+4}" y="${yy(mx)+14}" class="lab bad">${mx}</text></svg>
+      <ul><li>${chip('clock','Cleanest window')}<b>12:00–17:00</b></li><li>${chip('wind','Worst hours')}<b>22:00–09:00</b></li><li>${chip('rain','Morning fog')}<b>${['none','possible','likely','dense, many days'][fg]}</b></li><li>${chip('bed','Purifier in the room')}<b>${base>200?'ask, non-negotiable':'nice to have'}</b></li></ul><p>${c.air.note}</p></div>`; }).join('');
+  // 10-day strip
+  $('#airDays').innerHTML=T.days.map(day=>{ const d=dayDate(day.n); const v=aqiAt(day.city,d.getMonth(),8); const a=aqiAt(day.city,d.getMonth(),14); return `<div class="airday" style="--aqc:${aqiCol(v)}"><small>Day ${day.n} · ${DOW[d.getDay()].slice(0,3)} ${d.getDate()}</small><b>${v}</b><span>${T.cities[day.city].name} dawn</span><em>${a} by 14:00</em></div>`; }).join('');
+  $('#airMask').innerHTML=[['Good · Satisfactory','0–100','No mask. Normal day.','ok'],['Moderate','101–200','Mask for the sensitive on long walks; babies and asthmatics take it easy.','warn'],['Poor','201–300','N95 outdoors mornings and evenings. Midday walks fine. Purifier at night.','warn'],['Very poor','301–400','N95 whenever outdoors. Cut outdoor time to midday. No running, no rooftop evenings.','bad'],['Severe','401+','Short exposures only. Stay in, or move the day.','bad']].map(r=>`<div class="maskrow ${r[3]}"><b>${r[0]}</b><span class="mono">${r[1]}</span><span>${r[2]}</span></div>`).join('');
+  airLive();
+}
+async function airLive(){
+  const el=$('#airLive'); if(!el) return; el.innerHTML='';
+  const cities=Object.entries(T.cities).filter(([k,c])=>c.air);
+  const today=new Date(); const daysOut=Math.round((S.start-today)/864e5);
+  const res=await Promise.all(cities.map(async([k,c])=>{ try{ const r=await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${c.lat}&longitude=${c.lng}&hourly=us_aqi,pm2_5&current=us_aqi,pm2_5&timezone=Asia%2FKolkata&forecast_days=5`).then(r=>r.json()); return [k,c,r]; }catch(e){ return [k,c,null]; } }));
+  el.innerHTML=res.map(([k,c,r])=>{ if(!r) return `<div class="airlive"><div class="cn" style="color:${c.accent}">${c.name}</div><p>Live feed unavailable.</p></div>`; const H=r.hourly; const W=600,Hh=140; const vals=H.us_aqi.filter(v=>v!=null); const mx=Math.max(...vals,50); const yy=v=>10+((mx-v)/mx)*(Hh-34); const now=r.current.us_aqi; const cat=aqiCat(now);
+    return `<div class="airlive"><div class="cn" style="color:${c.accent}">${c.name} <small>now</small></div><div class="big" style="color:${aqiCol(now)}">${now}<small> US AQI · PM2.5 ${r.current.pm2_5}</small></div><svg viewBox="0 0 ${W} ${Hh}"><polyline points="${H.us_aqi.map((v,i)=>v==null?null:`${i/(H.us_aqi.length-1)*W},${yy(v)}`).filter(Boolean).join(' ')}" fill="none" stroke="${aqiCol(now)}" stroke-width="2.5"/>${[0,1,2,3,4].map(d=>`<text x="${d/4.99*W}" y="${Hh-2}">${d===0?'today':'+'+d+'d'}</text>`).join('')}</svg><p>${daysOut>5?`Five-day live forecast. Your trip is ${daysOut} days out, so read this as the current regime, not your dates.`:'This covers your travel dates.'}</p></div>`; }).join('');
+}
+
+/* ───── traffic ───── */
+const SAMPLE={agra:[['Agra Cantt → Taj Ganj','hub','stay'],['Taj Ganj → Agra Fort','stay','fort'],['Taj → Fatehpur Sikri','taj','sikri']],delhi:[['T3 → Connaught Place','hub','stay'],['CP → Nizamuddin station','stay','rail'],['CP → Qutub Minar','stay','qutub']],varanasi:[['Airport → Assi Ghat','hub','stay'],['Assi → Kashi Vishwanath','stay','kashi'],['Kashi → Sarnath','kashi','sarnath']]};
+function renderTraffic(){
+  const h=S.hour; $('#clock').textContent=hm(h); const now=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000); $('#nowpill').innerHTML=`<i></i>India time now ${hm(now.getHours()+now.getMinutes()/60)}`;
+  $('#gauges').innerHTML=Object.entries(T.cities).map(([k,c])=>{ const sp=c.traffic.speeds[h], mx=Math.max(...c.traffic.speeds), mn=Math.min(...c.traffic.speeds); const cong=(mx-sp)/(mx-mn); const lvl=cong>.7?['Gridlock','bad']:cong>.45?['Heavy','warn']:cong>.2?['Moving',''] :['Free flowing','ok']; return `<div class="gauge"><div class="cn" style="color:${c.accent}">${c.name}</div><div class="sp">${sp}<small> km/h</small></div><div class="lvl ${lvl[1]}">${svg('gauge')} ${lvl[0]} · surge ≈ ×${(1+(c.ride.peak-1)*cong).toFixed(2)}</div><div class="bar24">${c.traffic.speeds.map((s,i)=>`<i class="${i===h?'on':''}" style="height:${s/mx*100}%" title="${hm(i)} · ${s} km/h"></i>`).join('')}</div><p>${c.traffic.note}</p><table>${SAMPLE[k].map(([n,a,b])=>{ const r=ride(k,Math.round(hav(pt(a,k),pt(b,k))*1.3*10)/10,h,null); return `<tr><td>${n}<br><span style="font-size:14px;font-weight:600;color:var(--ink3)">${r.km} km · ${dur(r.mins)}</span></td><td>${money(r.fare[0])}</td></tr>`; }).join('')}</table></div>`; }).join('');
+}
+
+/* ───── budget ───── */
+function renderBudget(){
+  const seg=(id,arr,key,fmt)=>{ $(id).innerHTML=arr.map((o,i)=>`<button class="${S[key]===i?'on':''}" data-i="${i}">${o.name} · ${fmt(o)}</button>`).join(''); $$('button',$(id)).forEach(b=>b.addEventListener('click',()=>{ S[key]=+b.dataset.i; renderBudget(); })); };
+  seg('#hotel',T.budget.hotels,'hotel',o=>money(o.night)+'/night'); seg('#food',T.budget.food,'food',o=>money(o.day)+'/day');
+  $('#extras').innerHTML=T.budget.extras.map((e,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${S.extras.has(i)?'checked':''}><span>${e.name}</span><span>${money(e.pp)}</span></label>`).join('');
+  $$('#extras input').forEach(b=>b.addEventListener('change',()=>{ b.checked?S.extras.add(+b.dataset.i):S.extras.delete(+b.dataset.i); renderBudget(); }));
+  const n=S.n, rooms=Math.ceil(n/2);
+  const flights=T.legs.filter(l=>l.options[S.legs[l.id]].mode==='flight').reduce((s,l)=>s+legFare(l),0);
+  const trains=T.legs.filter(l=>l.options[S.legs[l.id]].mode!=='flight').reduce((s,l)=>s+legFare(l),0);
+  const rides=T.days.reduce((s,d)=>s+d.items.filter(i=>i.kind==='ride').reduce((a,i)=>a+hop(i,d).fare[0],0),0);
+  const seen=new Set(); const fees=T.days.reduce((s,d)=>s+d.items.filter(i=>i.kind==='sight'&&!i.short).reduce((a,i)=>{ if(seen.has(i.ref)) return a; seen.add(i.ref); return a+SIGHT[i.ref].fee[S.cit]; },0),0);
+  const hotels=T.budget.hotels[S.hotel].night*9*rooms, food=T.budget.food[S.food].day*10*n, extras=[...S.extras].reduce((s,i)=>s+T.budget.extras[i].pp,0)*n;
+  const rows=[['Flights',flights*n,`${T.legs.filter(l=>l.options[S.legs[l.id]].mode==='flight').length} legs × ${n}`],['Trains',trains*n,'mid fare, chosen class'],['Rides & cabs',rides,'shared, every hop'],['Entry fees',fees*n,`${S.cit?'foreign':'Indian'} tickets × ${n}`],['Hotels',hotels,`${rooms} room${rooms>1?'s':''} × 9 nights`],['Food',food,`${n} × 10 days`],['Extras',extras,'']];
+  const sub=rows.reduce((s,r)=>s+r[1],0), buffer=Math.round(sub*.1), total=sub+buffer;
+  $('#tot').innerHTML=rows.map(r=>`<tr><td>${r[0]}<br><span style="font-size:14px;font-weight:600;color:var(--ink3)">${r[2]}</span></td><td>${money(r[1])}</td></tr>`).join('')+`<tr><td>Buffer 10%</td><td>${money(buffer)}</td></tr><tr class="sum"><td>Total</td><td>${money(total)}</td></tr>`;
+  $('#pp').innerHTML=`<b>${money(total/n)}</b> per person · ${S.cur==='INR'?'about $'+Math.round(total/n/T.currency.usd).toLocaleString():'about ₹'+Math.round(total/n).toLocaleString('en-IN')} · ${S.cur==='INR'?'':'at ₹'+T.currency.usd+' per dollar · '}${Math.round(total/n/10).toLocaleString('en-IN')} ${S.cur==='INR'?'₹':'$'} a day`;
+}
+
+/* ───── bookings ───── */
+function renderTodo(){
+  const d0=S.start; const lead=(n,days)=>{ const d=new Date(d0); d.setDate(d.getDate()+n-days); return `${d.getDate()} ${MON[d.getMonth()]}`; };
+  const items=[[`Flights: BLR→DEL, DEL→VNS, VNS→BLR`,`book by ${lead(0,45)} for the low fares`],[`Gatimaan Express both ways (IRCTC opens 60 days out)`,`opens ${lead(1,60)}`],[`Taj Mahal e-ticket with mausoleum add-on`,`asi.payumoney.com · book ${lead(2,7)}`],[`Hotel near Taj East Gate, 1 night`,`Day 1`],[`Hotel in Connaught Place / Nizamuddin, 5 nights`,`Days 0, 2–6`],[`Guesthouse at Assi Ghat, 3 nights`,`Days 6–8`],[`Sunrise and aarti boats in Varanasi`,`WhatsApp a boatman a day ahead`],[`Prebook Varanasi airport cab`,`fixed ₹580–700`],[`N95 / FFP2 masks for everyone, bought at home`,`before Day 0`],[`Confirm air purifiers in the Delhi and Agra rooms`,`when booking`],[`Download offline maps and metro card app`,`before Day 0`],[`Check Taj closure: Fridays, and Delhi monument Mondays`,`your dates: ${T.days.filter(d=>d.items.some(i=>i.kind==='sight'&&SIGHT[i.ref].closed.toLowerCase().includes(DOW[dayDate(d.n).getDay()].toLowerCase()))).map(d=>'Day '+d.n).join(', ')||'no clashes'}`]];
+  $('#todo').innerHTML=items.map((it,i)=>`<label class="${S.done.has(i)?'done':''}"><input type="checkbox" data-i="${i}" ${S.done.has(i)?'checked':''}><span>${it[0]}<br><span class="mono" style="color:var(--ink3)">${it[1]}</span></span></label>`).join('');
+  $$('#todo input').forEach(b=>b.addEventListener('change',()=>{ b.checked?S.done.add(+b.dataset.i):S.done.delete(+b.dataset.i); b.parentElement.classList.toggle('done',b.checked); try{ localStorage.setItem('adv.done',JSON.stringify([...S.done])); }catch(e){} }));
+}
+
+/* ───── motion: parallax, tilt, embers ───── */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches, fine=matchMedia('(pointer: fine)').matches;
+let PL=[], px=0, py=0, tpx=0, tpy=0;
+function bindMotion(){
+  PL=$$('[data-p]').map(el=>({el,p:+el.dataset.p,tilt:el.classList.contains('tilt'),rx:0,ry:0,trx:0,try:0,hot:false}));
+  if(fine) PL.filter(o=>o.tilt&&!o.el.dataset.bound).forEach(o=>{ const el=o.el; el.dataset.bound=1;
+    el.addEventListener('pointerenter',()=>{o.hot=true;}); el.addEventListener('pointerleave',()=>{o.hot=false;o.trx=0;o.try=0;});
+    el.addEventListener('pointermove',e=>{ const r=el.getBoundingClientRect(); o.try=((e.clientX-r.left)/r.width-.5)*16; o.trx=-((e.clientY-r.top)/r.height-.5)*12; });
+    if(el.dataset.city) el.addEventListener('click',()=>{ const h=$$('#dayList .cityhead').find(x=>x.querySelector('img')?.src.includes(el.dataset.city+'.webp')); (h||$('#days')).scrollIntoView({behavior:'smooth',block:'start'}); }); });
+}
+if(fine) addEventListener('pointermove',e=>{ tpx=(e.clientX/innerWidth-.5)*2; tpy=(e.clientY/innerHeight-.5)*2; },{passive:true});
+let lastT=performance.now();
+(function motion(now){
+  const dt=Math.min((now-lastT)/1000,.1); lastT=now; const k=1-Math.exp(-dt*6);
+  px+=(tpx-px)*k; py+=(tpy-py)*k; const vh=innerHeight;
+  if(!reduce) for(const o of PL){ const r=o.el.getBoundingClientRect(); if(r.bottom<-200||r.top>vh+200) continue; const centre=(r.top+r.height/2-vh/2)/vh; // -1..1 as it crosses the viewport
+    const sy=-centre*o.p*6, sx=px*o.p*.9, syy=py*o.p*.6; let t=`translate3d(${sx.toFixed(1)}px,${(sy+syy).toFixed(1)}px,0)`;
+    if(o.tilt){ o.rx+=(o.trx-o.rx)*k*1.5; o.ry+=(o.try-o.ry)*k*1.5; t=`perspective(1200px) ${t} rotateX(${o.rx.toFixed(2)}deg) rotateY(${o.ry.toFixed(2)}deg)${o.hot?' scale(1.03)':''}`; }
+    o.el.style.transform=t; }
+  requestAnimationFrame(motion);
+})(lastT);
+if(!reduce){ const cv=$('#embers'), ctx=cv.getContext('2d'); let W,H,P=[]; const N=innerWidth<720?26:64, dpr=Math.min(devicePixelRatio,2);
+  const size=()=>{ W=cv.width=innerWidth*dpr; H=cv.height=innerHeight*dpr; cv.style.width=innerWidth+'px'; cv.style.height=innerHeight+'px'; }; size(); addEventListener('resize',size,{passive:true});
+  const sprite=col=>{ const c=document.createElement('canvas'); c.width=c.height=64; const g=c.getContext('2d'); const r=g.createRadialGradient(32,32,0,32,32,32); r.addColorStop(0,`rgba(${col},1)`); r.addColorStop(.3,`rgba(${col},.4)`); r.addColorStop(1,`rgba(${col},0)`); g.fillStyle=r; g.fillRect(0,0,64,64); return c; };
+  const SP=[sprite('242,150,50'),sprite('58,167,184'),sprite('232,220,198')];
+  const mk=y=>({x:Math.random()*W,y:y??Math.random()*H,r:(Math.random()*1.4+.5)*dpr,vy:(Math.random()*.3+.12)*dpr,vx:(Math.random()-.5)*.2*dpr,a:Math.random()*6.28,o:Math.random()*.5+.2,t:Math.random()<.8?0:Math.random()<.6?1:2});
+  for(let i=0;i<N;i++) P.push(mk()); let lt=performance.now(), ly=scrollY;
+  (function draw(now){ const dt=Math.min((now-lt)/16.67,4); lt=now; const dy=(scrollY-ly)*dpr*.3; ly=scrollY; ctx.clearRect(0,0,W,H);
+    for(const p of P){ p.a+=.02*dt; p.x+=(p.vx+Math.sin(p.a)*.25*dpr+px*.4*dpr)*dt; p.y-=p.vy*dt+dy*.5; if(p.y<-10) Object.assign(p,mk(H+10)); if(p.y>H+20) Object.assign(p,mk(-10)); if(p.x<-10) p.x=W+10; if(p.x>W+10) p.x=-10;
+      ctx.globalAlpha=p.o*(.7+.3*Math.sin(p.a*3)); const d=p.r*10; ctx.drawImage(SP[p.t],p.x-d/2,p.y-d/2,d,d); }
+    ctx.globalAlpha=1; requestAnimationFrame(draw); })(lt); }
+
+/* ───── wiring ───── */
+function renderAll(parts){ const all=!parts; setTimeout(()=>{ if(typeof reveal==='function'){ reveal($$('#dayList > *, #legList > *')); } },0); if(all||parts.includes('route')) renderRoute(); if(all||parts.includes('legs')) renderLegs(); if(all||parts.includes('days')) renderDays(); if(all||parts.includes('weather')) renderWeather(); if(all||parts.includes('weather')) renderAir(); if(all||parts.includes('traffic')) renderTraffic(); if(all||parts.includes('budget')) renderBudget(); if(all||parts.includes('todo')) renderTodo(); if(all||parts.includes('map')) renderMap(); $('#tv').textContent=S.n; }
+$('#start').value=iso(S.start); $('#start').addEventListener('change',e=>{ if(!e.target.value) return; S.start=new Date(e.target.value+'T00:00'); renderAll(); });
+$('#tm').addEventListener('click',()=>{ S.n=Math.max(1,S.n-1); renderAll(['budget']); }); $('#tp').addEventListener('click',()=>{ S.n=Math.min(12,S.n+1); renderAll(['budget']); });
+$$('#cit button').forEach(b=>b.addEventListener('click',()=>{ S.cit=+b.dataset.v; $$('#cit button').forEach(x=>x.classList.toggle('on',x===b)); renderAll(['days','budget']); }));
+$$('#cur button').forEach(b=>b.addEventListener('click',()=>{ S.cur=b.dataset.v; $$('#cur button').forEach(x=>x.classList.toggle('on',x===b)); renderAll(); }));
+$('#hour').addEventListener('input',e=>{ S.hour=+e.target.value; renderTraffic(); });
+{ const now=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000); S.hour=now.getHours(); $('#hour').value=S.hour; }
+$('#share').addEventListener('click',()=>{ const u=new URL(location.href); u.search=`?d=${iso(S.start)}&n=${S.n}&c=${S.cit}&cur=${S.cur}&h=${S.hotel}&f=${S.food}&l=${T.legs.map(l=>l.id+':'+S.legs[l.id]).join(',')}`; navigator.clipboard?.writeText(u.toString()); const t=$('#toast'); t.textContent='Link copied'; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),1800); });
+$('#src').innerHTML=T.sources.map(s=>`<li><a href="${s[1]}" target="_blank" rel="noopener">${s[0]}</a></li>`).join('');
+$$('#cit button').forEach(x=>x.classList.toggle('on',+x.dataset.v===S.cit)); $$('#cur button').forEach(x=>x.classList.toggle('on',x.dataset.v===S.cur));
+renderAll(); live(); bindMotion();
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:0,rootMargin:'0px 0px -4% 0px'});
+function reveal(els){ els.forEach(el=>{ if(el.classList.contains('rv')) return; el.classList.add('rv'); io.observe(el); }); }
+reveal($$('section > *:not(#dayList):not(#legList)')); reveal($$('#dayList > *, #legList > *'));
+// safety net: anything still hidden after 3s becomes visible
+setTimeout(()=>$$('.rv:not(.in)').forEach(el=>el.classList.add('in')),3000);
+})();
+</script>
+</body>
+</html>
