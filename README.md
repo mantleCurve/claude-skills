@@ -5,6 +5,7 @@ Reusable skills for [Claude Code](https://claude.com/claude-code). Each skill li
 
 | Skill | What it does |
 |---|---|
+| [`seo-skill`](skills/seo-skill) | Implement SEO/AEO-ready sites and CMS editors: nested services and locations, metadata, OG/X cards, schema, AI draft editing, mobile performance, and a tested audit-evidence gate. |
 | [`travel-journey-site`](skills/travel-journey-site) | Turns a trip (a few places, or a poster) into a deployed, data-driven itinerary site: map, trains, flights, fares, hour-aware ride estimates, traffic, weather, air quality, budget, bookings. Reference build: https://mantlecurve.github.io/agra-delhi-varanasi-journey/ |
 
 ## Install
@@ -48,6 +49,26 @@ The skill drives a few tools from inside Claude Code:
 - Network access: Open-Meteo (weather, air quality), OpenStreetMap tiles, Google Fonts
 
 ## Use
+
+For SEO implementation and audits:
+
+```bash
+./install.sh seo-skill
+```
+
+Then start a new Claude Code session and ask:
+
+```text
+/seo-skill Add complete SEO controls to this CMS, verify their rendered HTML,
+and audit the service hierarchy and mobile performance. Keep staging private.
+```
+
+The skill adapts to your stack. Its optional local report gate requires Node 18+
+and no npm dependencies. Browser/crawl tools are needed only for the checks you
+request; unavailable measurements are reported explicitly. It does not promise
+rankings or include paid integrations, client data, or third-party installers.
+
+For the travel skill:
 
 ```
 /travel-journey-site Bangalore home. Jaipur 3 days, Jodhpur 2, Udaipur 3. Mid February, two of us.
