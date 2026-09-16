@@ -20,6 +20,12 @@ Choose only the relevant references:
 - [Sources and provenance](references/sources.md): primary documentation and community workflows reviewed during development.
 - [Audit follow-through](references/audit-follow-through.md): verify a supplied audit, detect template substitutions, repair descriptions and distinguish missing evidence from demonstrated defects.
 
+## Independent discovery before handoff
+
+Do not wait for the user to supply an audit or research links. For a site build or substantial SEO change, independently inspect the generated pages and the deployed result, research current primary guidance, and review comparable implementations where relevant. Passing implementation tests is not evidence that the content is useful or the release is ready. Follow [audit follow-through](references/audit-follow-through.md) for both self-discovered and supplied findings.
+
+Research publicly verifiable business facts before asking the owner. Record source URL, retrieval date, and conflicts; preserve explicitly confirmed details when public listings disagree. Distinguish scheduling hours from service availability and national brand claims from local franchise facts. Ask only for unresolved owner-dependent facts. Report remaining blockers plainly, including when noindex merely contains unfinished content.
+
 ## Implement the complete path
 
 1. Inventory existing behavior and record a baseline before changing URLs or content. For reference sites, retain source URLs, retrieval dates and coverage counts; a sitemap is an inventory, not permission to copy prose or proof of local service availability.
