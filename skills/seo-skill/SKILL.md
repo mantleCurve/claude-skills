@@ -49,3 +49,5 @@ Research publicly verifiable business facts before asking the owner. Record sour
 ## Completion
 
 Report what works end to end, evidence and tests, remaining drafts or missing integrations, and measured performance limitations. Link artifacts or the authorized deployment. Mark checks not run as unmeasured; an AI narrative cannot substitute for a crawl, browser trace, provider response, or retained test result.
+
+For local page generation, lead forms and release controls, read [publication and conversion evidence](references/publication-and-conversion.md). Treat design claims and planning inventory separately from verified public facts.
