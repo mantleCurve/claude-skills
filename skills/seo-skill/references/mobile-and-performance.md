@@ -8,6 +8,10 @@ Start at 360–390 px and verify 320 px plus tablet/desktop. Use accessible togg
 
 Verify open/close, repeat-click collapse, audience switching, viewport changes, keyboard focus, Escape, and every visible child link. Check labels and ordering against the source inventory. Keep call/request actions reachable without covering form submit buttons or final content; account for safe-area insets. Use adequate touch targets, readable type, explicit form labels and visible focus. Check horizontal overflow and keyboard-open layouts.
 
+Audit typography across all generated routes when practical: computed font-family, intended weight/size/line-height, fallback fonts and visible overflow. Form controls can inherit bold label weights through `font: inherit`; set their intended normal weight explicitly. Browser-native select popups may use OS-controlled styling. Don't promise a licensed brand font is loaded when only its fallback is available. Maintain semantic type hierarchy rather than forcing every text element to one size.
+
+For large service forms, use a searchable picker with audience/category filters and nested service choices. Include a “Something else” path with an explicit custom-description field, server validation, persistence, notification email and admin display/export. Keep local availability claims qualified. Stack narrow filters to avoid clipped labels. Preserve native/no-JS selection where feasible; don't hide a required control without supplying accessible validation. Test keyboard selection, Escape, zero results, category reset and custom input. Initialization must not steal focus or scroll the visitor down to the form on page load.
+
 ## Image and asset pipeline
 
 - Decode and validate uploads before processing. Apply EXIF rotation; strip unneeded metadata while respecting required attribution/provenance. Bound file size, dimensions and decoded pixel count.

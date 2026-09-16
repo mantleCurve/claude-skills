@@ -30,6 +30,18 @@ Offer model selection from a server-controlled provider/model allowlist. Keep ke
 
 Admin/editor capabilities must be enforced on endpoints. Protect session cookies, validate mutations against CSRF, rate-limit sensitive routes and record revisions/audit events. Media upload must validate decoded image content, enforce size/pixel limits, remove unwanted metadata, and generate optimized derivatives.
 
+### API credentials and accountable edits
+
+If requested, offer named keys with full access or explicit resource/action scopes, optional expiry, last-used time and revocation. Enforce the requested key limit atomically in the database, including concurrent creation; a UI counter is insufficient. A 10-key limit was used in the reference workflow but is configurable for other projects. Store only a hash of a high-entropy secret and show the raw key once. Omit hashes/secrets from list responses and logs.
+
+Authorize every route, including combined bootstrap endpoints, against the scope and owner's current active role. Scoped keys must not recover broader data through bootstrap/export endpoints or create more powerful credentials. Unknown routes default-deny. Disabled owners and expired/revoked keys lose access immediately; an invalid key must not silently fall back to a cookie. Keep cookie CSRF checks. If a bearer key bypasses a staging password, restrict that bypass to authenticated API routes; browser/admin pages stay protected.
+
+Record page/post creation, save and restore atomically with before/after snapshots, version, timestamp, actor identity and fields changed. API actions also identify the key by ID/name. Optimistic concurrency must reject stale saves without writing phantom revisions. Restore creates a new draft revision, never erases history or silently publishes. Distinguish legacy pre-edit snapshots from new after-edit versions in the UI. Provide activity pagination and no ordinary edit/delete access to audit records.
+
+For in-CMS AI edits, persist a generation ID with requesting actor, page, requested/returned model, provider, timestamp and proposed patch. Carry applied generation IDs into the saved revision and validate page/actor ownership server-side. Multiple applied suggestions may involve different models. Label the final edit AI-assisted when a human modifies the proposal. External integrations can report model/provider/time, but label that provenance caller-reported; unreported AI authorship cannot be inferred reliably from text.
+
+Admin/editor invitations can use single-use expiring links and a durable email outbox. Preserve invitation recipients when retrying; don't accidentally apply the current lead-notification address to all queued mail. A send-only email API key may forbid domain-status reads: distinguish restricted scope from an invalid key, and don't claim verified delivery from mere configuration.
+
 ## Build, publication and forms
 
 Keep prominent Build and Go Live controls with different meanings. Build creates an immutable preview artifact and audit result; Go Live promotes that exact build. Expose status/failure details and rollback. Draft updates after a build must not silently enter that release. Coordinate hashed assets/cache invalidation with the active HTML so fresh CSS cannot break stale navigation markup.
