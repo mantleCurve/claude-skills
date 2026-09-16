@@ -11,3 +11,5 @@ Test the entire lead path: invalid submissions and honeypots produce no success 
 Separate service-contact consent from optional marketing/SMS preference. Store wording version and timestamp. Preference capture does not establish an operational SMS integration. Inspect actual vendor contracts and legal scope; a corporate policy may exclude independently operated local websites.
 
 Retain measured evidence for mobile layouts, real forms, export exclusions and release protection. Do not label implementation tests as measured field performance or live inbox delivery. Report disabled integrations and unreviewed copy explicitly.
+
+Audit the selected rendered release, not merely every record in the CMS. A full private catalogue can hide missing parents in a smaller public batch. Crawl internal links from the homepage, detect unreachable/deep pages, title/H1/canonical collisions and leaked drafting markers. Preview links should not make an immutable release depend on mutable draft content. Keep factual review failures separate from deterministic structural results.
