@@ -5,6 +5,7 @@ Reusable skills for [Claude Code](https://claude.com/claude-code). Each skill li
 
 | Skill | What it does |
 |---|---|
+| [`vistprint_india_photo_album_landscape`](skills/vistprint_india_photo_album_landscape) | Builds print-safe landscape photo albums with complete photo coverage, consistent ivory backgrounds, separate covers, and verified 300 DPI JPG exports for the Vistaprint India editor. |
 | [`seo-skill`](skills/seo-skill) | Implement SEO/AEO-ready sites and CMS editors: nested services and locations, metadata, OG/X cards, schema, AI draft editing, mobile performance, and a tested audit-evidence gate. |
 | [`travel-journey-site`](skills/travel-journey-site) | Turns a trip (a few places, or a poster) into a deployed, data-driven itinerary site: map, trains, flights, fares, hour-aware ride estimates, traffic, weather, air quality, budget, bookings. Reference build: https://mantlecurve.github.io/agra-delhi-varanasi-journey/ |
 
