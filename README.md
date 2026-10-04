@@ -5,6 +5,7 @@ Reusable skills for [Claude Code](https://claude.com/claude-code). Each skill li
 
 | Skill | What it does |
 |---|---|
+| [`jev-posthog`](skills/jev-posthog) | Combines PostHog visitor behavior with Jev intent classification, CRM deduplication, and tailored follow-up drafts. |
 | [`vistprint_india_photo_album_landscape`](skills/vistprint_india_photo_album_landscape) | Builds print-safe landscape photo albums with complete photo coverage, consistent ivory backgrounds, separate covers, and verified 300 DPI JPG exports for the Vistaprint India editor. |
 | [`seo-skill`](skills/seo-skill) | Implement SEO/AEO-ready sites and CMS editors: nested services and locations, metadata, OG/X cards, schema, AI draft editing, mobile performance, and a tested audit-evidence gate. |
 | [`travel-journey-site`](skills/travel-journey-site) | Turns a trip (a few places, or a poster) into a deployed, data-driven itinerary site: map, trains, flights, fares, hour-aware ride estimates, traffic, weather, air quality, budget, bookings. Reference build: https://mantlecurve.github.io/agra-delhi-varanasi-journey/ |
@@ -50,6 +51,24 @@ The skill drives a few tools from inside Claude Code:
 - Network access: Open-Meteo (weather, air quality), OpenStreetMap tiles, Google Fonts
 
 ## Use
+
+For visitor intent and follow-up workflows:
+
+```bash
+./install.sh jev-posthog
+```
+
+Then start a new Claude Code session and ask:
+
+```text
+/jev-posthog Add visitor intent classification and draft follow-ups to this website.
+```
+
+The skill adapts to the existing website, CRM, and email provider. Live classification
+requires a TypeSafe API key and a configured PostHog project. It includes integration
+references and a sample request, with draft-first delivery and explicit unknown outcomes
+when evidence is weak. Visitor identity must come from known first-party data or a
+separately configured enrichment provider.
 
 For SEO implementation and audits:
 

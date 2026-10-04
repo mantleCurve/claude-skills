@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jev + PostHog"
+  short_description: "Build visitor intent and tailored follow-up flows"
+  default_prompt: "Use $jev-posthog to add visitor intent classification and draft follow-ups to this website."
