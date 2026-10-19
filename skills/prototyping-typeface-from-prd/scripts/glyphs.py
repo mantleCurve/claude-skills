@@ -328,6 +328,24 @@ def face_cut(c, cx, cy, rx, ry, ang, side):
     return rect, ix, iy
 
 
+def ring_angle_for_y(c, cx, cy, rx, ry, y_target, a0, a1):
+    """Skeleton angle between a0 and a1 (degrees, within one quadrant, so the inner corner's y is
+    monotonic in the angle) whose inner-contour corner sits at y_target; clamped to the range."""
+    lo, hi = min(a0, a1), max(a0, a1)
+
+    def f(a):
+        return inner_corner(c, cx, cy, rx, ry, a)[1]
+
+    increasing = f(hi) > f(lo)
+    for _ in range(60):
+        mid = (lo + hi) / 2.0
+        if (f(mid) < y_target) == increasing:
+            lo = mid
+        else:
+            hi = mid
+    return (lo + hi) / 2.0
+
+
 def lerp_w(c, light, medium, bold):
     """Piecewise-linear per-weight value keyed on the stem (lightest / default / boldest)."""
     s = c.s
@@ -336,10 +354,23 @@ def lerp_w(c, light, medium, bold):
     return medium + (bold - medium) * (s - S_MED) / max(1.0, S_BOLD - S_MED)
 
 
+def stem_in(c, sx, side=1):
+    """Design-space x three units inside a stem centred at sx: just short of its right edge
+    (side=+1) or its left edge (side=-1). Strokes that leave a stem start here so they overlap it
+    without reaching past its far edge: the stem centre scales by the width factor but the stroke
+    width does not, so a stroke started at the stem's design-space edge pokes out at Bold."""
+    return sx + side * (c.h - 3) / c.wf
+
+
 def c_angle(c):
-    """Inner-contour angle of the c / C terminal faces: 30 deg up to Medium, 45 deg at Bold, so
-    the face's acute corner never gets spiky as the inner radius shrinks."""
-    return max(30.0, 30.0 + 0.3 * (c.s - S_MED))
+    """Polar angle (degrees from the horizontal axis) where the c / C / G rings end at their
+    vertical terminal faces. The face is the vertical chord through the inner corner, so it gets
+    LONGER and its inner corner MORE acute the closer the ring ends to 3 o'clock (a vertical line
+    stays inside a nearly vertical stroke for a long way): at Medium 20 deg gives a 1.61-stem
+    face with a 17 deg corner, 30 deg 1.44 stems / 26 deg, 45 deg 1.24 stems / 40 deg, 55 deg
+    1.14 stems / 50 deg. 45 deg at every weight keeps the faces short and square without opening
+    the c past 45 percent of the x-height (apertures 290 / 256 / 225 / 154 Light to Bold)."""
+    return 45.0
 
 
 def diag_angle(x_hi, y_hi, x_lo, y_lo, s):
@@ -436,68 +467,104 @@ def g_a(c):
     # Double-storey. Right stem from the baseline to the hood's springing height hy. Hood: exact
     # half-ellipse from the stem (0 deg, tangent vertical, flush with the stem's right edge) over
     # the top to 9 o'clock, where the tangent is vertical again so the butt cap is a horizontal
-    # full-width flat cut. Bowl: ellipse on the baseline whose skeleton is tangent to the stem
-    # centre line, so its outer right edge merges into the stem with no step.
-    # Vertical budget (x-height 510 + overshoots = 534) per weight: bowl outer height, clearance
-    # between bowl top and hood terminal, hood band. At Bold the stem alone (158) leaves no room
-    # for an open hood counter, so the hood there is the solid half-ellipse (inner radius 0) and
-    # the clearance drops to 30; see the report. The a is allowed to grow to 555 (x1.03 = 572,
-    # 6 percent over Medium) at Bold.
+    # full-width flat cut. Bowl: ellipse on the baseline, outer left edge at x = 50, outer right
+    # edge flush with the stem's right edge, so the ring runs the full stem depth and merges into
+    # it with no step. The ring is a full stem up to Medium and thins to 0.75 stem at Bold (PRD 7
+    # principle 2, Bold exception) so the counter stays open; the hood and stem stay full stem.
+    # Vertical budget (x-height 510 + overshoots = 534) per weight: bowl outer height, 40 units of
+    # clearance between the bowl's outer top and the hood's underside, hood band. The hood keeps
+    # an open counter while its inner vertical radius is at least 30; below that (from about stem
+    # 125 up, so at Bold) it is the solid half-ellipse exactly one stem tall and the bowl takes
+    # the rest of the budget. The a grows to 555 (x1.03 = 572, 6 percent over Medium) at Bold.
     s, h = c.s, c.h
     adv = lerp_w(c, 540, 540, 555)
     right_outer = adv - SB_S
     sx = right_outer - h
-    bowl_w = right_outer - 50                     # bowl outer left edge at x = 50
-    bowl_h = lerp_w(c, 330, 330, 346)             # outer height incl. overshoot (counter >= 30)
-    gap = lerp_w(c, 40, 40, 30)                   # hood terminal to bowl outer top
-    rxb, ryb = (bowl_w - s) / 2.0, (bowl_h - s) / 2.0
-    bx, by = sx - rxb, -OVER + h + ryb
-    hy = (-OVER + bowl_h) + gap                   # hood springs here; terminal cap at this y
+    wr = round(lerp_w(c, 1.0, 1.0, 0.75) * s, 1)   # bowl ring stroke
+    hr = wr / 2.0
+    gap = 40                                       # hood underside to bowl outer top
+    bowl_h = lerp_w(c, 330, 330, 336)              # outer height incl. overshoot
+    hy = (-OVER + bowl_h) + gap                    # hood springs here; terminal cap at this y
     ryh = XH + OVER - h - hy
-    x_t = SB_R + 20 + h                           # hood terminal centre x
+    if ryh - h < 30:
+        hy = XH + OVER - 2 * h                     # solid hood, one stem tall
+        ryh = h
+        bowl_h = hy + OVER - gap
+    # ring skeleton: outer right edge at the stem's right edge, outer left edge at 50 (both in
+    # final space: the radii scale by wf, the stroke does not)
+    x_right = sx + (h - hr) / c.wf
+    rxb = (x_right - 50 - hr / c.wf) / 2.0
+    ryb = (bowl_h - wr) / 2.0
+    bx, by = x_right - rxb, -OVER + hr + ryb
+    x_t = SB_R + 20 + h                            # hood terminal centre x
     rxh = (sx - x_t) / 2.0
     hcx = sx - rxh
-    if ryh - h >= 1:
+    if ryh - h >= 30:
         hood = stroke(arc_cmds(hcx, hy, rxh, ryh, 0, 180), s)
     else:
-        # degenerate counter: fill the outer half-ellipse down to the flat underside at hy
+        # fill the outer half-ellipse down to the flat underside at hy
         # (h / wf: the outer offset must stay h after width scaling, flush with the stem edge)
         ho = h / c.wf
         hood = {"cmds": arc_cmds(hcx, hy, rxh + ho, ryh + h, 0, 180) + [("L", sx + ho, hy), ("Z",)], "f": True}
     # the stem runs 3 units up into the hood band (hidden inside it) so there is no seam at hy
-    return (adv, [vline(sx, 0, hy + 3, s), hood, stroke(ellipse_cmds(bx, by, rxb, ryb), s)])
+    return (adv, [vline(sx, 0, hy + 3, s), hood, stroke(ellipse_cmds(bx, by, rxb, ryb), wr)])
 
 
 @glyph("c", 520)
 def g_c(c):
+    # The advance follows the terminal face: the right sidebearing measured from the face keeps
+    # the value the former 30-degree terminal had (86 / 126 / 182 Light / Medium / Bold, which
+    # gave the fixed 520 advance), so the squarer 45-degree terminal does not loosen the c.
     cx = SB_R + LC_W / 2.0
-    _, cut = ellipse_cut_right(cx, LC_CY, c.rx, c.ry, c.s, c_angle(c))
-    return [stroke(ellipse_cmds(cx, LC_CY, c.rx, c.ry), c.s, [cut])]
+    cut_x, cut = ellipse_cut_right(cx, LC_CY, c.rx, c.ry, c.s, c_angle(c))
+    return (cut_x + lerp_w(c, 86, 126, 182), [stroke(ellipse_cmds(cx, LC_CY, c.rx, c.ry), c.s, [cut])])
 
 
 @glyph("e", 540)
 def g_e(c):
+    # Bar: 0.94 stem thick up to Medium, thinning to 0.70 stem at Bold with its centre dropping
+    # from 265 to 255 (PRD 7 principle 2, Bold exception) so the upper counter stays >= 50 tall.
+    # The bar ends where the ring's outer contour crosses the bar's top edge, so neither corner
+    # protrudes and the ring arrives at the end face almost tangentially.
     # Lower terminal: anchored vertical face through the inner-contour corner at skeleton angle
-    # -theta (steeper at Bold so the aperture stays open). Everything right of the face from the
-    # baseline up to the bar's centre line is removed, so the face runs cleanly from the corner
-    # down to the outer contour and the bar hides the ring's cut edge. The bar runs to the
-    # bowl's rightmost outer edge (h / wf keeps the end flush after width scaling).
+    # -theta. theta is solved per weight so the aperture between the corner and the bar's
+    # underside is 90 (Light) / 62 (Medium) / 40 (Bold), which lands at about 32 / 40 / 58 deg:
+    # the corner then sits as far right as the aperture allows (about 1.2 stems left of the
+    # bar's end at Medium; the inner corner cannot pass the inner ellipse's rightmost point,
+    # which is one stroke width inside the bar's end, so the e cannot share c_angle).
+    # Cuts are disjoint because the SVG clip is even-odd:
+    # the ring is removed right of the face up to the bar's underside and right of the bar's
+    # end up to the bar's top; what remains under the bar is hidden by it.
+    s, h, wf = c.s, c.h, c.wf
     cx = 270
-    bar_y = 265
-    theta = lerp_w(c, 40, 48, 68)
-    _, ix, _ = face_cut(c, cx, LC_CY, c.rx, c.ry, -theta, "lr")
-    cut = [ix, -BIG, BIG, bar_y]
-    return [stroke(ellipse_cmds(cx, LC_CY, c.rx, c.ry), c.s, [cut]),
-            hline(cx - c.rx, cx + c.rx + c.h / c.wf, bar_y, c.b)]
+    bar_w = round(lerp_w(c, 0.94, 0.94, 0.70) * s, 1)
+    bar_y = lerp_w(c, 265, 265, 255)
+    bar_top, bar_bot = bar_y + bar_w / 2.0, bar_y - bar_w / 2.0
+    aperture = lerp_w(c, 90, 62, 40)
+    theta = ring_angle_for_y(c, cx, LC_CY, c.rx, c.ry, bar_bot - aperture, -20, -89)
+    _, ix, _ = face_cut(c, cx, LC_CY, c.rx, c.ry, theta, "lr")
+    rxo, ryo = c.rx * wf + h, c.ry + h
+    x_end = (cx * wf + rxo * math.sqrt(1 - ((bar_top - LC_CY) / ryo) ** 2)) / wf
+    cuts = [[ix, -BIG, x_end, bar_bot], [x_end, -BIG, BIG, bar_top]]
+    return [stroke(ellipse_cmds(cx, LC_CY, c.rx, c.ry), s, cuts),
+            hline(cx - c.rx, x_end, bar_y, bar_w)]
+
+
+def bar_reach(c):
+    """How far the t / f crossbar extends beyond each stem edge: 120 up to Medium (PRD 9.1), then
+    shrinking so the crossbar's total width never exceeds the PRD's 348 and stays inside the 380
+    advance (16 sidebearings) at Bold too."""
+    return min(120.0, (348 - c.s) / 2.0)
 
 
 @glyph("f", 380)
 def g_f(c):
-    sx = 16 + 120 + c.h           # same left clearance as the t crossbar
+    reach = bar_reach(c)
+    sx = 16 + reach + c.h         # same left clearance as the t crossbar
     rxf, ryf = 130, 130 * RATIO
     top = ASC - c.h
     path = [("M", sx, 0), ("L", sx, top - ryf)] + arc_cmds(sx + rxf, top - ryf, rxf, ryf, 180, 90, move=False)
-    return [stroke(path, c.s), hline(sx - c.h - 120, sx + c.h + 120, XH - c.hb, c.b)]
+    return [stroke(path, c.s), hline(sx - c.h - reach, sx + c.h + reach, XH - c.hb, c.b)]
 
 
 @glyph("g", 560)
@@ -650,7 +717,8 @@ def g_s(c):
 @glyph("t", 380)
 def g_t(c):
     sx = 190
-    return [vline(sx, 0, TH, c.s), hline(sx - c.h - 120, sx + c.h + 120, XH - c.hb, c.b)]
+    reach = bar_reach(c)
+    return [vline(sx, 0, TH, c.s), hline(sx - c.h - reach, sx + c.h + reach, XH - c.hb, c.b)]
 
 
 @glyph("v", 500)
@@ -735,7 +803,8 @@ def g_A(c):
 
 
 def bowl_half(c, x_from, y_top, y_bot, right_outer):
-    """B/D/P/R bowl: horizontal from x_from to the arc, half-ellipse down, horizontal back."""
+    """B/D/P/R bowl: horizontal from x_from (3 units inside the stem's right edge, see stem_in)
+    to the arc, half-ellipse down, horizontal back."""
     ry = (y_top - y_bot) / 2.0
     rx = min(ry * (UC_W / UC_H), right_outer - c.h - x_from - 10)
     xa = right_outer - c.h - rx
@@ -743,39 +812,49 @@ def bowl_half(c, x_from, y_top, y_bot, right_outer):
     return [("M", x_from, y_top), ("L", xa, y_top)] + arc_cmds(xa, cy, rx, ry, 90, -90, move=False) + [("L", x_from, y_bot)]
 
 
+def bowl_grow(c):
+    """B, P and R bowls widen by 16 at Bold (advance +6 percent over Medium, the PRD 12 cap) so
+    their counters stay open against the 158 stem."""
+    return lerp_w(c, 0, 0, 16)
+
+
 @glyph("B", 620)
 def g_B(c):
     sx = SB_S + c.h
     mid = 360
-    return [vline(sx, 0, CAP, c.s),
-            stroke(bowl_half(c, SB_S, CAP - c.h, mid, 550), c.s),
-            stroke(bowl_half(c, SB_S, mid, c.h, 570), c.s)]
+    g = bowl_grow(c)
+    return (620 + g, [vline(sx, 0, CAP, c.s),
+                      stroke(bowl_half(c, stem_in(c, sx), CAP - c.h, mid, 550 + g), c.s),
+                      stroke(bowl_half(c, stem_in(c, sx), mid, c.h, 570 + g), c.s)])
 
 
 @glyph("C", 700)
 def g_C(c):
+    # advance from the terminal face, as for c (98 / 138 / 208 kept from the 30-degree design)
     cx = SB_R + UC_W / 2.0
-    _, cut = ellipse_cut_right(cx, UC_CY, c.RX, c.RY, c.s, c_angle(c))
-    return [stroke(ellipse_cmds(cx, UC_CY, c.RX, c.RY), c.s, [cut])]
+    cut_x, cut = ellipse_cut_right(cx, UC_CY, c.RX, c.RY, c.s, c_angle(c))
+    return (cut_x + lerp_w(c, 98, 138, 208), [stroke(ellipse_cmds(cx, UC_CY, c.RX, c.RY), c.s, [cut])])
 
 
 @glyph("D", 660)
 def g_D(c):
     sx = SB_S + c.h
-    return [vline(sx, 0, CAP, c.s), stroke(bowl_half(c, SB_S, CAP - c.h, c.h, 610), c.s)]
+    return [vline(sx, 0, CAP, c.s), stroke(bowl_half(c, stem_in(c, sx), CAP - c.h, c.h, 610), c.s)]
 
 
 @glyph("E", 560)
 def g_E(c):
     sx = SB_S + c.h
-    return [vline(sx, 0, CAP, c.s), hline(SB_S, 510, CAP - c.hb, c.b), hline(SB_S, 510, c.hb, c.b),
-            hline(SB_S, 490, 360, c.b)]
+    x0 = stem_in(c, sx)
+    return [vline(sx, 0, CAP, c.s), hline(x0, 510, CAP - c.hb, c.b), hline(x0, 510, c.hb, c.b),
+            hline(x0, 490, 360, c.b)]
 
 
 @glyph("F", 540)
 def g_F(c):
     sx = SB_S + c.h
-    return [vline(sx, 0, CAP, c.s), hline(SB_S, 500, CAP - c.hb, c.b), hline(SB_S, 470, 360, c.b)]
+    x0 = stem_in(c, sx)
+    return [vline(sx, 0, CAP, c.s), hline(x0, 500, CAP - c.hb, c.b), hline(x0, 470, 360, c.b)]
 
 
 @glyph("G", 740)
@@ -801,7 +880,7 @@ def g_G(c):
 @glyph("H", 700)
 def g_H(c):
     lx, rx_ = SB_S + c.h, 700 - SB_S - c.h
-    return [vline(lx, 0, CAP, c.s), vline(rx_, 0, CAP, c.s), hline(SB_S, 700 - SB_S, 360, c.b)]
+    return [vline(lx, 0, CAP, c.s), vline(rx_, 0, CAP, c.s), hline(stem_in(c, lx), stem_in(c, rx_, -1), 360, c.b)]
 
 
 @glyph("I", 248)
@@ -845,7 +924,7 @@ def g_K(c):
 @glyph("L", 500)
 def g_L(c):
     sx = SB_S + c.h
-    return [vline(sx, 0, CAP, c.s), hline(SB_S, 460, c.hb, c.b)]
+    return [vline(sx, 0, CAP, c.s), hline(stem_in(c, sx), 460, c.hb, c.b)]
 
 
 @glyph("M", 860)
@@ -877,7 +956,8 @@ def g_O(c):
 @glyph("P", 600)
 def g_P(c):
     sx = SB_S + c.h
-    return [vline(sx, 0, CAP, c.s), stroke(bowl_half(c, SB_S, CAP - c.h, 320, 560), c.s)]
+    g = bowl_grow(c)
+    return (600 + g, [vline(sx, 0, CAP, c.s), stroke(bowl_half(c, stem_in(c, sx), CAP - c.h, 320, 560 + g), c.s)])
 
 
 @glyph("Q", 740)
@@ -895,17 +975,18 @@ def g_Q(c):
 def g_R(c):
     sx = SB_S + c.h
     y_bot = 330
-    bowl = bowl_half(c, SB_S, CAP - c.h, y_bot, 560)
+    g = bowl_grow(c)
+    bowl = bowl_half(c, stem_in(c, sx), CAP - c.h, y_bot, 560 + g)
     xa = bowl[1][1]
     h = c.h
-    right_outer = 600
+    right_outer = 600 + g
     alpha = math.atan((right_outer - xa) / y_bot)
     for _ in range(30):
         alpha = math.atan((right_outer - h / math.cos(alpha) - xa) / y_bot)
     x_sk = right_outer - h / math.cos(alpha)
     leg = [(xa - 10, y_bot), (x_sk, 0)]
     leg = [leg[0], line_pt(leg[0], leg[1], 1.15)]
-    return [vline(sx, 0, CAP, c.s), stroke(bowl, c.s), stroke(poly_cmds(leg), c.s, band(0, CAP))]
+    return (620 + g, [vline(sx, 0, CAP, c.s), stroke(bowl, c.s), stroke(poly_cmds(leg), c.s, band(0, CAP))])
 
 
 @glyph("S", 580)
@@ -1130,15 +1211,16 @@ def g_seven(c):
     # Top bar (thickness c.b) and full-stem diagonal as one filled polygon: the diagonal's
     # upper-right edge passes exactly through the bar's top-right corner, its lower-left edge
     # through (150, 0), and it is cut flat on the baseline. Crossbar (PRD 9.4): thickness c.b
-    # centred on y = 350, reaching one stem beyond each edge of the diagonal at that height.
+    # centred on y = 350, reaching one stem beyond each edge of the diagonal at that height but
+    # never past the top bar's ends, so the ink stays inside the advance at Bold.
     s, b, wf = c.s, c.b, c.wf
     xl, xr, xb = 20 * wf, 500 * wf, 150 * wf
     t = math.tan(diag_angle(xr, CAP, xb, 0, s))
     body = [(xl, CAP), (xr, CAP), (xr - CAP * t, 0), (xb, 0), (xb + (CAP - b) * t, CAP - b), (xl, CAP - b)]
     yc = 350
     x_left, x_right = xb + yc * t, xr - (CAP - yc) * t
-    bar = [(x_left - s, yc - b / 2.0), (x_right + s, yc - b / 2.0),
-           (x_right + s, yc + b / 2.0), (x_left - s, yc + b / 2.0)]
+    bl, br = max(x_left - s, xl), min(x_right + s, xr)
+    bar = [(bl, yc - b / 2.0), (br, yc - b / 2.0), (br, yc + b / 2.0), (bl, yc + b / 2.0)]
     return [fill_poly(c, body), fill_poly(c, bar)]
 
 
