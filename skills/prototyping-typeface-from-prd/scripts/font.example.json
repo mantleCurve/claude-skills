@@ -1,0 +1,9 @@
+{
+  "family": "Testa",
+  "owner": "Example Studio",
+  "version": "PRD v1.0, 2026-10-19",
+  "classification": "Geometric sans-serif, slightly condensed, medium-weight default",
+  "weights": { "Light": 62, "Medium": 108, "Bold": 158 },
+  "default": "Medium",
+  "vendor": "UKWN"
+}

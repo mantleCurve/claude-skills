@@ -1,0 +1,461 @@
+<title>{{FAMILY}} Specimen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap">
+<style>
+/* Layout: a single centred column; the glyph samples sit on a hairline construction grid,
+   the PRD below reads at a 65ch measure. One accent (ultramarine) marks guides and the active weight.
+   build_specimen.py regenerates everything between the START/END markers; the rest is hand-written. */
+:root {
+  --bg: #f2f2ef;
+  --fg: #17171a;
+  --muted: #68686e;
+  --rule: #d3d3cd;
+  --grid: #dcdcd6;
+  --card: #fafaf8;
+  --accent: #243fa3;
+  --accent-soft: rgba(36, 63, 163, 0.10);
+  --focus: #243fa3;
+  --font-ui: "Jost", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131316; --fg: #e9e8e3; --muted: #9a9aa1; --rule: #2c2c31; --grid: #26262b;
+    --card: #19191d; --accent: #8ea3f6; --accent-soft: rgba(142, 163, 246, 0.16); --focus: #8ea3f6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131316; --fg: #e9e8e3; --muted: #9a9aa1; --rule: #2c2c31; --grid: #26262b;
+  --card: #19191d; --accent: #8ea3f6; --accent-soft: rgba(142, 163, 246, 0.16); --focus: #8ea3f6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.page {
+  max-width: 1200px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 96px;
+}
+a { color: var(--accent); }
+svg { display: block; }
+code { font-family: var(--font-mono); font-size: 0.9em; background: var(--accent-soft); padding: 0 .3em; border-radius: 2px; }
+h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+.label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+section { padding-block: 56px 0; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-bottom: 24px; }
+.sec-head h2 { font-size: 26px; }
+.sec-head p { margin: 0; color: var(--muted); max-width: 60ch; min-width: 0; }
+.note { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+
+/* header */
+header { padding-block: 40px 0; }
+.masthead { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: baseline; }
+.hero { margin-top: 32px; color: var(--fg); }
+.hero svg { width: 100%; height: auto; overflow: visible; }
+.hero-meta { display: grid; grid-template-columns: 1fr auto; gap: 16px 32px; margin-top: 20px; align-items: end; }
+.hero-meta p { margin: 0; font-size: 18px; max-width: 62ch; min-width: 0; }
+.hero-meta dl { display: grid; grid-template-columns: auto auto; gap: 2px 16px; margin: 0; font-variant-numeric: tabular-nums; }
+.hero-meta dt { color: var(--muted); }
+.hero-meta dd { margin: 0; }
+@media (max-width: 720px) { .hero-meta { grid-template-columns: 1fr; } }
+
+/* weight toggle */
+.toolbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  margin-top: 32px; padding-block: 10px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap;
+}
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.seg button {
+  appearance: none; font: inherit; font-size: 14px; letter-spacing: 0.04em; cursor: pointer;
+  background: transparent; color: var(--fg); border: 0; border-right: 1px solid var(--rule);
+  padding: 8px 18px; min-width: 88px;
+}
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+.seg button:hover:not([aria-pressed="true"]) { background: var(--accent-soft); }
+.seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; position: relative; z-index: 1; }
+.tool-meta { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; display: flex; gap: 20px; flex-wrap: wrap; }
+.tool-meta b { color: var(--fg); font-weight: 500; }
+
+/* mandated glyph cards */
+.mandated { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 24px; }
+.m-card { border-top: 2px solid var(--accent); padding-top: 14px; min-width: 0; }
+.m-card .m-fig { background: var(--card); border: 1px solid var(--rule); padding: 12px 8px; }
+.m-card svg { width: 100%; height: auto; }
+.m-card h3 { font-size: 20px; margin-top: 14px; display: flex; gap: 12px; align-items: baseline; }
+.m-card h3 small { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.m-card p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+.m-card ul { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: var(--muted); }
+
+/* glyph grid */
+.group { margin-top: 28px; }
+.group .label { display: block; margin-bottom: 10px; }
+.cells { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.cell { background: var(--card); padding: 8px 6px 6px; min-width: 0; }
+.cell svg { width: 100%; height: auto; }
+.cell .name { display: block; font-size: 11px; color: var(--muted); margin-top: 4px; font-family: var(--font-mono); letter-spacing: 0; overflow-wrap: anywhere; line-height: 1.3; }
+.cell.alt { outline: 1px solid var(--accent); outline-offset: -1px; }
+
+/* sample settings */
+.setting { border-top: 1px solid var(--rule); padding-block: 18px 22px; display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 8px 24px; }
+.setting:last-child { border-bottom: 1px solid var(--rule); }
+.setting .label { padding-top: 6px; }
+.setting .lines { min-width: 0; }
+.setting .lines svg { height: var(--size, 56px); width: auto; max-width: 100%; margin-bottom: 4px; }
+@media (max-width: 720px) { .setting { grid-template-columns: 1fr; } .setting .lines svg { height: calc(var(--size, 56px) * 0.8); } }
+
+/* PRD */
+.prd { max-width: 65ch; }
+.prd-title { font-size: 28px; margin-bottom: 8px; }
+.prd h3 { font-size: 21px; margin-top: 44px; margin-bottom: 10px; }
+.prd h4 { font-size: 17px; margin-top: 28px; margin-bottom: 8px; }
+.prd p, .prd li { font-size: 16px; line-height: 1.6; }
+.prd ul, .prd ol { padding-left: 22px; }
+.prd hr { border: 0; border-top: 1px solid var(--rule); margin: 24px 0; }
+.prd-toc { margin: 16px 0 8px; font-size: 14px; }
+.prd-toc ol { columns: 2; column-gap: 32px; padding-left: 20px; margin: 0; }
+.prd-toc li { break-inside: avoid; padding: 2px 0; }
+.prd-toc a { text-decoration: none; color: var(--fg); }
+.prd-toc a:hover { color: var(--accent); }
+@media (max-width: 520px) { .prd-toc ol { columns: 1; } }
+.table-wrap { overflow-x: auto; margin: 14px 0 20px; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; vertical-align: top; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule); }
+th { font-weight: 500; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-bottom-color: var(--fg); }
+td:first-child, th:first-child { padding-left: 0; }
+.prd table td { min-width: 6ch; }
+
+/* footnote */
+.foot { margin-top: 64px; border-top: 1px solid var(--fg); padding-top: 14px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px 32px; }
+@media (max-width: 720px) { .foot { grid-template-columns: 1fr; } }
+.foot table { max-width: 560px; }
+.foot p { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .seg button { transition: background-color .15s ease, color .15s ease; }
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+
+<div class="page">
+  <header>
+<!--HERO-START-->
+<!--HERO-END-->
+  </header>
+
+  <div class="toolbar" role="group" aria-label="Weight">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <span class="label">Weight</span>
+      <div class="seg" id="weight-seg"></div>
+    </div>
+    <div class="tool-meta" id="tool-meta" aria-live="polite"></div>
+  </div>
+
+  <section id="mandated">
+    <div class="sec-head">
+      <h2>The mandated glyphs</h2>
+      <p>Fixed by brief (PRD, mandated-glyph section). Shown on the construction grid with the metric lines from the PRD: ascender, cap height, x-height, baseline, descender.</p>
+    </div>
+    <div class="mandated">
+<!--MANDATED-START-->
+<!--MANDATED-END-->
+    </div>
+  </section>
+
+  <section id="glyphs">
+    <div class="sec-head">
+      <h2>Sample glyphs</h2>
+      <p>Each cell shows baseline and x-height. Round forms share one ellipse per case; all terminals are flat cuts.</p>
+    </div>
+    <div class="group"><span class="label">Lowercase</span><div class="cells" id="cells-lower"></div></div>
+    <div class="group"><span class="label">Uppercase</span><div class="cells" id="cells-upper"></div></div>
+    <div class="group"><span class="label">Figures, lining</span><div class="cells" id="cells-figures"></div></div>
+    <div class="group"><span class="label">Punctuation</span><div class="cells" id="cells-punct"></div></div>
+  </section>
+
+  <section id="settings">
+    <div class="sec-head">
+      <h2>Sample settings</h2>
+      <p>Review strings from the PRD's sample-strings appendix, set with the advance widths from the width table, zero tracking and the PRD word space. Characters outside the sample set are omitted and listed.</p>
+    </div>
+    <div id="settings-list"></div>
+  </section>
+
+  <section id="prd">
+    <div class="sec-head">
+      <h2>Product Requirements Document</h2>
+      <p>The full PRD, reproduced from <code>docs/PRD.md</code>.</p>
+    </div>
+    <div class="prd">
+<!--PRD-START-->
+<!--PRD-END-->
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>
+      <span class="label">Construction grid</span>
+      <p>Font units on a 1000 UPM grid, default master. Strokes are centred on their skeleton; outer edges land on the metric lines. Lighter and bolder weights set up to 3 percent narrower and wider respectively.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Metric</th><th>Value</th></tr></thead>
+        <tbody id="metrics-body"></tbody>
+      </table>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var DATA = /*GLYPHS-START*/null/*GLYPHS-END*/;
+  var SETTINGS = /*SETTINGS-START*/[]/*SETTINGS-END*/;
+  if (!DATA) { document.body.insertAdjacentHTML('afterbegin', '<p style="padding:16px">No glyph data: run glyphs.py, then build_specimen.py.</p>'); return; }
+  var M = DATA.metrics;
+  var WEIGHT_NAMES = Object.keys(DATA.weights).sort(function (a, b) { return DATA.weights[a].stem - DATA.weights[b].stem; });
+  var DEFAULT_WEIGHT = DATA.weights[DATA['default']] ? DATA['default'] : WEIGHT_NAMES[Math.floor(WEIGHT_NAMES.length / 2)];
+  var STORE = String(DATA.family || 'specimen').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-weight';
+  var weight = DEFAULT_WEIGHT;
+  var clipId = 0;
+
+  function glyphs() { return DATA.weights[weight].glyphs; }
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+  // --- one glyph's drawing, in font units (y up); caller wraps in a flipped <g>
+  function glyphBody(g) {
+    var out = '';
+    for (var i = 0; i < g.el.length; i++) {
+      var e = g.el[i];
+      if (e.c) {
+        out += '<circle cx="' + e.c[0] + '" cy="' + e.c[1] + '" r="' + e.c[2] + '" fill="currentColor"/>';
+        continue;
+      }
+      if (e.f) {
+        out += '<path d="' + e.d + '" fill="currentColor"/>';
+        continue;
+      }
+      var clip = '';
+      if (e.cut) {
+        var id = 'cp' + (++clipId);
+        var d = 'M-5000 -5000H5000V5000H-5000Z';
+        for (var k = 0; k < e.cut.length; k++) {
+          var r = e.cut[k];
+          d += 'M' + r[0] + ' ' + r[1] + 'H' + r[2] + 'V' + r[3] + 'H' + r[0] + 'Z';
+        }
+        out += '<clipPath id="' + id + '"><path clip-rule="evenodd" d="' + d + '"/></clipPath>';
+        clip = ' clip-path="url(#' + id + ')"';
+      }
+      out += '<path d="' + e.d + '" fill="none" stroke="currentColor" stroke-width="' + e.w +
+        '" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10"' + clip + '/>';
+    }
+    return out;
+  }
+
+  function flipGroup(x, body) {
+    return '<g transform="translate(' + x + ' 0) scale(1 -1)">' + body + '</g>';
+  }
+
+  function hline(x0, x1, y, cls, w) {
+    return '<line x1="' + x0 + '" x2="' + x1 + '" y1="' + (-y) + '" y2="' + (-y) + '" stroke="' + cls + '" stroke-width="' + (w || 2) + '" vector-effect="non-scaling-stroke"/>';
+  }
+
+  function gridShift(g) { var inner = g.adv + 390; return inner < 1100 ? (1100 - inner) / 2 : 0; }
+
+  // --- a single glyph on a grid. mode: 'grid' (labelled full grid) or 'cell' (baseline + x-height)
+  function glyphSVG(name, mode) {
+    var g = glyphs()[name];
+    if (!g) return '<p class="note">No glyph "' + esc(name) + '" in glyphs.json yet.</p>';
+    var top, bottom, padL, padR, lines = '';
+    if (mode === 'grid') {
+      top = Math.max(860, (M.asc || M.cap) + 110); bottom = Math.min(-330, (M.desc || 0) - 100); padL = 330; padR = 60;
+      var guides = [[M.asc, 'ascender'], [M.cap, 'cap height'], [M.th, 't height'], [M.xh, 'x-height'], [0, 'baseline'], [M.desc, 'descender']];
+      for (var i = 0; i < guides.length; i++) {
+        var y = guides[i][0];
+        if (typeof y !== 'number') continue;
+        lines += hline(-padL - 400, g.adv + padR + 400, y, 'var(--accent)', 1);
+        lines += '<text x="' + (-padL + 10 - gridShift(g)) + '" y="' + (-y - 10) + '" font-size="34" font-family="Jost, system-ui, sans-serif" letter-spacing="2" fill="var(--accent)">' + esc((guides[i][1] + ' ' + y).toUpperCase()) + '</text>';
+      }
+      lines += '<line x1="0" x2="0" y1="' + (-top) + '" y2="' + (-bottom) + '" stroke="var(--grid)" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+      lines += '<line x1="' + g.adv + '" x2="' + g.adv + '" y1="' + (-top) + '" y2="' + (-bottom) + '" stroke="var(--grid)" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+      lines += '<text x="' + (g.adv / 2) + '" y="' + (-bottom - 14) + '" text-anchor="middle" font-size="34" font-family="Jost, system-ui, sans-serif" letter-spacing="2" fill="var(--muted)">' + esc('ADVANCE ' + g.adv) + '</text>';
+    } else {
+      top = 820; bottom = -300; padL = 60; padR = 60;
+      lines += hline(-padL - 600, g.adv + padR + 600, 0, 'var(--grid)', 1) + hline(-padL - 600, g.adv + padR + 600, M.xh, 'var(--grid)', 1);
+    }
+    // fixed frame width so every figure shares one scale; the glyph is centred in it
+    var frame = mode === 'grid' ? 1100 : 1040;
+    var inner = g.adv + padL + padR;
+    var shift = inner < frame ? (frame - inner) / 2 : 0;
+    var vb = (-padL - shift) + ' ' + (-top) + ' ' + Math.max(frame, inner) + ' ' + (top - bottom);
+    return '<svg viewBox="' + vb + '" role="img" aria-label="' + esc(name) + '" xmlns="http://www.w3.org/2000/svg">' +
+      lines + flipGroup(0, glyphBody(g)) + '</svg>';
+  }
+
+  // --- text layout
+  function nameFor(ch) {
+    var G = glyphs();
+    if (DATA.charmap[ch]) return DATA.charmap[ch];
+    if (G[ch]) return ch;
+    return null;
+  }
+
+  function measureWord(word) {
+    var G = glyphs(), w = 0;
+    for (var i = 0; i < word.length; i++) { var n = nameFor(word[i]); if (n) w += G[n].adv; }
+    return w;
+  }
+
+  function lineSVG(text, top, bottom, fixedWidth) {
+    var G = glyphs(), x = 0, body = '';
+    for (var i = 0; i < text.length; i++) {
+      var n = nameFor(text[i]);
+      if (!n) continue;
+      var g = G[n];
+      if (g.el.length) body += flipGroup(x, glyphBody(g));
+      x += g.adv;
+    }
+    var w = fixedWidth || x;
+    return '<svg viewBox="0 ' + (-top) + ' ' + w + ' ' + (top - bottom) + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + esc(text) + '">' + body + '</svg>';
+  }
+
+  // wrap words to the container's width at the given pixel size (px per 1000 units)
+  function wrappedLines(text, maxUnits) {
+    var words = text.split(' '), lines = [], cur = '', curW = 0, spaceW = glyphs().space.adv;
+    for (var i = 0; i < words.length; i++) {
+      var ww = measureWord(words[i]);
+      if (cur && curW + spaceW + ww > maxUnits) { lines.push(cur); cur = words[i]; curW = ww; }
+      else { cur = cur ? cur + ' ' + words[i] : words[i]; curW = cur === words[i] ? ww : curW + spaceW + ww; }
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  function renderSetting(el) {
+    var text = el.getAttribute('data-text');
+    var size = parseFloat(getComputedStyle(el).getPropertyValue('--size')) || 56;
+    var top = 820, bottom = -300;
+    var pxPerUnit = size / (top - bottom);
+    var maxUnits = Math.max(2000, el.clientWidth / pxPerUnit);
+    var lines = wrappedLines(text, maxUnits), out = '';
+    for (var i = 0; i < lines.length; i++) out += lineSVG(lines[i], top, bottom);
+    el.innerHTML = out;
+  }
+
+  // --- sections
+  function buildSettings() {
+    var host = document.getElementById('settings-list'), out = '';
+    for (var i = 0; i < SETTINGS.length; i++) {
+      var s = SETTINGS[i];
+      out += '<div class="setting"><span class="label">' + esc(s.label) + '</span><div class="lines" style="--size:' + s.size + 'px"' +
+        (s.text ? ' data-text="' + esc(s.text) + '"' : '') + '>' +
+        (s.text ? '' : '<p class="note" style="margin:0">' + esc(s.note) + '</p>') + '</div>' +
+        (s.text && s.note ? '<span></span><p class="note">' + esc(s.note) + '</p>' : '') + '</div>';
+    }
+    host.innerHTML = out || '<p class="note">No sample strings found in the PRD appendix.</p>';
+  }
+
+  function buildCells() {
+    var order = DATA.order;
+    var groups = { lower: [], upper: [], figures: [], punct: [] };
+    for (var i = 0; i < order.length; i++) {
+      var n = order[i];
+      if (/^[a-z](\.|$)/.test(n)) groups.lower.push(n);
+      else if (/^[A-Z](\.|$)/.test(n)) groups.upper.push(n);
+      else if (/^(zero|one|two|three|four|five|six|seven|eight|nine)(\.|$)/.test(n)) groups.figures.push(n);
+      else groups.punct.push(n);
+    }
+    Object.keys(groups).forEach(function (k) {
+      var host = document.getElementById('cells-' + k), out = '';
+      groups[k].forEach(function (n) {
+        var alt = n.indexOf('.') !== -1;
+        out += '<div class="cell' + (alt ? ' alt' : '') + '"><div data-glyph="' + n + '" data-mode="cell"></div>' +
+          '<span class="name">' + esc(n) + (alt ? ' stylistic alternate' : '') + '</span></div>';
+      });
+      host.innerHTML = out;
+      host.parentNode.style.display = out ? '' : 'none';
+    });
+  }
+
+  function buildWeightButtons() {
+    var out = '';
+    for (var i = 0; i < WEIGHT_NAMES.length; i++) {
+      var n = WEIGHT_NAMES[i];
+      out += '<button type="button" id="weight-' + n.toLowerCase() + '" data-weight="' + esc(n) + '" aria-pressed="false">' + esc(n) + '</button>';
+    }
+    document.getElementById('weight-seg').innerHTML = out;
+  }
+
+  function buildMetricsTable() {
+    var stems = WEIGHT_NAMES.map(function (n) { return DATA.weights[n].stem; }).join(' / ');
+    var rows = [
+      ['Cap height', M.cap, 'Vertical stem ' + WEIGHT_NAMES.join(' / '), stems],
+      ['x-height', M.xh, 'Horizontal stroke', '94% of stem'],
+      ['Ascender', M.asc, 'Dot diameter', '109% of stem'],
+      ['Descender', M.desc, 'Round overshoot', M.over],
+      ['t height', M.th, 'Word space', M.space]
+    ];
+    var out = '';
+    rows.forEach(function (r) {
+      if (typeof r[1] === 'undefined' || typeof r[3] === 'undefined') return;
+      out += '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td></tr>';
+    });
+    document.getElementById('metrics-body').innerHTML = out;
+  }
+
+  function renderAll() {
+    var nodes = document.querySelectorAll('[data-glyph]');
+    for (var i = 0; i < nodes.length; i++) nodes[i].innerHTML = glyphSVG(nodes[i].getAttribute('data-glyph'), nodes[i].getAttribute('data-mode'));
+    var hero = document.getElementById('hero');
+    if (hero) hero.innerHTML = lineSVG(hero.getAttribute('data-text'), 800, -250);
+    var settings = document.querySelectorAll('.setting .lines[data-text]');
+    for (var j = 0; j < settings.length; j++) renderSetting(settings[j]);
+    var w = DATA.weights[weight];
+    var meta = '<span>Stem <b>' + w.stem + '</b></span><span>Horizontal <b>' + w.bar + '</b></span><span>Dot <b>' + w.dot + '</b></span>';
+    if (w.glyphs.n) meta += '<span>n advance <b>' + w.glyphs.n.adv + '</b></span>';
+    document.getElementById('tool-meta').innerHTML = meta;
+  }
+
+  function setWeight(name) {
+    if (!DATA.weights[name]) return;
+    weight = name;
+    var btns = document.querySelectorAll('.seg button');
+    for (var i = 0; i < btns.length; i++) btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-weight') === name ? 'true' : 'false');
+    renderAll();
+    try { localStorage.setItem(STORE, name); } catch (e) { /* storage unavailable */ }
+  }
+
+  document.getElementById('weight-seg').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-weight]');
+    if (b) setWeight(b.getAttribute('data-weight'));
+  });
+
+  buildWeightButtons();
+  buildMetricsTable();
+  buildCells();
+  buildSettings();
+  var remembered = null;
+  try { remembered = localStorage.getItem(STORE); } catch (e) { remembered = null; }
+  setWeight(DATA.weights[remembered] ? remembered : DEFAULT_WEIGHT);
+
+  // re-wrap sample settings when the layout width changes
+  var pending = null;
+  function rewrap() {
+    if (pending) return;
+    pending = (window.requestAnimationFrame || setTimeout)(function () {
+      pending = null;
+      var settings = document.querySelectorAll('.setting .lines[data-text]');
+      for (var j = 0; j < settings.length; j++) renderSetting(settings[j]);
+    });
+  }
+  if (window.ResizeObserver) new ResizeObserver(rewrap).observe(document.getElementById('settings-list'));
+  else window.addEventListener('resize', rewrap);
+})();
+</script>
