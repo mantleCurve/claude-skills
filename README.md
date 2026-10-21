@@ -5,6 +5,7 @@ Reusable skills for [Claude Code](https://claude.com/claude-code). Each skill li
 
 | Skill | What it does |
 |---|---|
+| [`episodic-video-merge`](skills/episodic-video-merge) | Downloads and verifies numbered episodes, audits frozen tails, makes adjustable trim tests, and merges MP4s with one chapter per episode. |
 | [`jev-posthog`](skills/jev-posthog) | Combines PostHog visitor behavior with Jev intent classification, CRM deduplication, and tailored follow-up drafts. |
 | [`vistprint_india_photo_album_landscape`](skills/vistprint_india_photo_album_landscape) | Builds print-safe landscape photo albums with complete photo coverage, consistent ivory backgrounds, separate covers, and verified 300 DPI JPG exports for the Vistaprint India editor. |
 | [`seo-skill`](skills/seo-skill) | Implement SEO/AEO-ready sites and CMS editors: nested services and locations, metadata, OG/X cards, schema, AI draft editing, mobile performance, and a tested audit-evidence gate. |
@@ -52,6 +53,25 @@ The skill drives a few tools from inside Claude Code:
 - Network access: Open-Meteo (weather, air quality), OpenStreetMap tiles, Google Fonts
 
 ## Use
+
+For episode downloads, trim tests, and chaptered compilations:
+
+```bash
+./install.sh episodic-video-merge
+```
+
+Then ask, for example:
+
+```text
+/episodic-video-merge Download the complete series from this URL, inspect the
+endings, and make an episodes 4–8 trim test with one chapter per episode.
+Keep videos paused and preserve the original downloads.
+```
+
+Requires Python 3.10+, FFmpeg, ffprobe, and curl. The skill includes portable local
+scripts and a documented 2.04-second preset from an accepted 25 fps test; trims
+remain configurable for other footage. Run its generated-fixture integration
+checks with `python3 skills/episodic-video-merge/scripts/test_pipeline.py`.
 
 For visitor intent and follow-up workflows:
 
