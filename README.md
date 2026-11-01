@@ -11,6 +11,7 @@ Reusable skills for [Claude Code](https://claude.com/claude-code). Each skill li
 | [`seo-skill`](skills/seo-skill) | Implement SEO/AEO-ready sites and CMS editors: nested services and locations, metadata, OG/X cards, schema, AI draft editing, mobile performance, and a tested audit-evidence gate. |
 | [`travel-journey-site`](skills/travel-journey-site) | Turns a trip (a few places, or a poster) into a deployed, data-driven itinerary site: map, trains, flights, fares, hour-aware ride estimates, traffic, weather, air quality, budget, bookings. Reference build: https://mantlecurve.github.io/agra-delhi-varanasi-journey/ |
 | [`prototyping-typeface-from-prd`](skills/prototyping-typeface-from-prd) | Designs a typeface from a brief: a 22-section font PRD with numeric metrics, sample glyphs as stroke skeletons on a 1000 UPM grid, proof sheets reviewed at every weight, a specimen page, and OTF/WOFF prototypes with an editable type tester. |
+| [`unexpected-accent-palette`](skills/unexpected-accent-palette) | Turns a two-colour base pair into a memorable palette with one hue-distant, high-chroma accent: OKLCH hue/chroma checks, ranked accent suggestions, light/dark tokens with computed WCAG contrast, a side-by-side HTML preview, and accent-area measurement on screenshots. |
 
 ## Install
 
@@ -108,6 +109,26 @@ The skill adapts to your stack. Its optional local report gate requires Node 18+
 and no npm dependencies. Browser/crawl tools are needed only for the checks you
 request; unavailable measurements are reported explicitly. It does not promise
 rankings or include paid integrations, client data, or third-party installers.
+
+For colour palettes and CTA accents:
+
+```bash
+./install.sh unexpected-accent-palette
+```
+
+Then ask, for example:
+
+```text
+/unexpected-accent-palette Our site is charcoal #21232E and royal blue #105BFF and
+it feels forgettable. Keep the brand colours, add one accent for the CTA, and give
+me light and dark CSS tokens with contrast results.
+```
+
+Requires Python 3.9+ (standard library only). FFmpeg is needed only for `coverage`,
+which measures how much of a screenshot the accent covers. The skill keeps your base
+pair, proposes exactly one accent hue, and reports contrast computed by its script,
+never estimated. Run its tests with
+`python3 skills/unexpected-accent-palette/scripts/test_accent.py`.
 
 For the travel skill:
 
