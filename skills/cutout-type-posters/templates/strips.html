@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+  STRIPS: white page, the photo sliced into seven vertical strips (colour subject over a black-and-white room),
+  the outer strips stepping down at the top; a two-line headline turned to read bottom-to-top on the left.
+  Asset:  assets/comp-bw-color.png  (from prep.sh)
+  Copy (all set in uppercase):
+    {{HEADLINE_1}} {{HEADLINE_2}}   line 1, e.g. HAPPY BIRTHDAY
+    {{NAME}} {{TAGLINE}}            line 2, e.g. MAYA TURNS FIVE
+    {{LABEL_ISSUE}}                 footer left of the strips, e.g. NO. 05
+    {{LABEL_MIDDLE}}                footer centre, e.g. THE FIFTH YEAR
+    {{LABEL_DATE}}                  footer right, e.g. JUN 2026
+    {{LABEL_SINCE}}                 under the headline, e.g. EST. 2021
+  Photo fit: edit CONFIG in the first script below.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=block">
+<link rel="stylesheet" href="base.css">
+<style>
+  .c { background: #FFFFFF; }
+  /* photo window x 300..1032, y 48..1240; each strip is a clipped view onto the same photo */
+  .s { position: absolute; overflow: hidden; }
+  /* type column, built horizontal then turned to read bottom-to-top */
+  .col { left: 48px; top: 1240px; width: 1192px; transform-origin: 0 0; }
+  .l1 { font-family: "Archivo"; font-weight: 900; font-stretch: 112%; color: #0D0D0D; display: block; }
+  .l2 { font-family: "Archivo"; font-weight: 800; font-stretch: 125%; color: #0D0D0D; display: block; margin-top: 18px; }
+  .foot { left: 300px; right: 48px; top: 1266px; display: flex; justify-content: space-between; color: #0D0D0D; }
+  .foot2 { left: 48px; top: 1266px; color: #0D0D0D; }
+</style></head>
+<body><div class="c" id="c">
+  <div class="abs col"><span class="fit l1" data-fit="1192">{{HEADLINE_1}} {{HEADLINE_2}}</span><span class="fit l2" data-fit="1192">{{NAME}} {{TAGLINE}}</span></div>
+  <div class="abs foot micro"><span>{{LABEL_ISSUE}}</span><span>{{LABEL_MIDDLE}}</span><span>{{LABEL_DATE}}</span></div>
+  <div class="abs foot2 micro">{{LABEL_SINCE}}</div>
+</div>
+<script>
+// ===== CONFIG: the only photo-specific numbers. Read subject.json (from prep.sh) and find the face by eye. =====
+const CONFIG = {
+  // Photo px -> CSS px. Make the subject about 1107 px tall in the 1192 px window:
+  //   SCALE = 1107 / (subject.y2 - subject.y1)
+  SCALE: .608,
+  // The photo pixel that lands on the window's top-left corner (300,48):
+  //   SRC_X = faceCentreX - 366 / SCALE   (puts the face in the middle of the centre strip; 366 = half the window width)
+  //   SRC_Y = subject.y1 - 64 / SCALE     (top of the head 64 px below the window top)
+  // The photo must cover the whole window; a gap is reported as a render error.
+  SRC_X: 328, SRC_Y: 330,
+  // Seven strip widths, left to right, CSS px. They must add up to 684 (the 732 px window minus six 8 px gaps).
+  // The centre strip carries the face: make it at least (face width in photo px * SCALE) + 60 and keep the set
+  // symmetric, taking the difference out of the outer strips.
+  WIDTHS: [62, 76, 92, 224, 92, 76, 62],
+  // How far each strip's top starts below the window top (the outer strips step down). A design choice.
+  INSETS: [150, 96, 48, 0, 48, 96, 150],
+};
+// ===== end CONFIG =====
+
+(() => {
+  const X0 = 300, Y0 = 48, W = 732, H = 1192, GAP = 8, { SCALE, SRC_X, SRC_Y, WIDTHS, INSETS } = CONFIG;
+  const total = WIDTHS.reduce((a, b) => a + b, 0) + GAP * (WIDTHS.length - 1);
+  if (WIDTHS.length !== INSETS.length || total !== W) {
+    document.body.dataset.error = `CONFIG.WIDTHS plus gaps must add up to ${W} px (now ${total}) and match INSETS in length`;
+    return;
+  }
+  const c = document.getElementById('c');
+  let x = X0;
+  WIDTHS.forEach((w, i) => {
+    const y = Y0 + INSETS[i], d = document.createElement('div'), img = document.createElement('img');
+    d.className = 's';
+    Object.assign(d.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: (H - INSETS[i]) + 'px' });
+    // the window's top-left (X0,Y0) shows photo pixel (SRC_X,SRC_Y); in this strip's own box that point sits at (X0-x, Y0-y)
+    img.src = 'assets/comp-bw-color.png';
+    img.dataset.put = [SCALE, SRC_X, SRC_Y, X0 - x, Y0 - y].join(',');
+    img.setAttribute('data-cover', '');
+    d.appendChild(img); c.appendChild(d); x += w + GAP;
+  });
+})();
+
+window.FACES = ['900 100px "Archivo"', '800 100px "Archivo"', '600 100px "Archivo"'];
+window.afterFit = () => { document.querySelector('.col').style.transform = 'rotate(-90deg)'; };
+</script>
+<script src="fit.js"></script>
+</body></html>

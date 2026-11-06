@@ -1,0 +1,61 @@
+<!doctype html>
+<!--
+  BLOCK: saturated yellow page, a giant three-row condensed headline, the cut-out subject standing in front of
+  it, and the name in wide white type across the legs.
+  Asset:  assets/cutout.png  (from prep.sh; for a dark background colour use assets/cutout-dark.png)
+  Copy (all set in uppercase):
+    {{STACK_1}} {{STACK_2}} {{STACK_3}}   the three stacked rows, e.g. HAPPY / BIRTH / DAY (one word split in two
+                                          reads best; every row takes the size of the widest, so the rows share a cap height)
+    {{NAME}}                              the white name across the bottom, e.g. MAYA
+    {{LABEL_TOP_LEFT}}                    e.g. NO. 05 / 2026
+    {{LABEL_TOP_RIGHT}}                   e.g. THE BIRTHDAY ISSUE
+    {{LABEL_BOTTOM_LEFT}}                 e.g. EST. 2021
+    {{LABEL_BOTTOM_RIGHT}}                e.g. FIVE YEARS OLD
+  Photo fit: edit CONFIG in the first script below.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=block">
+<link rel="stylesheet" href="base.css">
+<style>
+  .c { background: #FFD21F; }
+  .stack { left: 40px; top: 92px; width: 1000px; }
+  .w { display: block; font-family: "Archivo"; font-weight: 900; font-stretch: 62%; color: #0D0D0D; line-height: .74; text-align: center; }
+  .kid { filter: drop-shadow(0 24px 30px rgba(60,40,0,.28)); }
+  .name { left: 40px; width: 1000px; text-align: center; font-family: "Archivo"; font-weight: 900; font-stretch: 125%; color: #FFFFFF; line-height: .8; }
+  .tl { left: 40px; top: 42px; color: #0D0D0D; } .tr { right: 40px; top: 42px; color: #0D0D0D; }
+  .bl { left: 40px; bottom: 30px; color: #0D0D0D; } .br { right: 40px; bottom: 30px; color: #0D0D0D; }
+</style></head>
+<body><div class="c">
+  <div class="abs tl micro">{{LABEL_TOP_LEFT}}</div><div class="abs tr micro">{{LABEL_TOP_RIGHT}}</div>
+  <div class="abs stack"><span class="fit w" data-fit="1000">{{STACK_1}}</span><span class="fit w" data-fit="1000">{{STACK_2}}</span><span class="fit w" data-fit="1000">{{STACK_3}}</span></div>
+  <img class="abs kid" id="kid" src="assets/cutout.png">
+  <div class="abs name fit" id="name" data-fit="1000">{{NAME}}</div>
+  <div class="abs bl micro">{{LABEL_BOTTOM_LEFT}}</div><div class="abs br micro">{{LABEL_BOTTOM_RIGHT}}</div>
+</div>
+<script>
+// ===== CONFIG: the only photo-specific numbers. Read them off subject.json (from prep.sh). =====
+const CONFIG = {
+  // Photo px -> CSS px. Make the subject about 1140 px tall, so the head overlaps the first row and the
+  // name covers the legs:   SCALE = 1140 / (subject.y2 - subject.y1)
+  SCALE: .626,
+  // The anchor point in photo px: bottom-centre of the subject box.
+  //   FEET_X = (subject.x1 + subject.x2) / 2,   FEET_Y = subject.y2
+  FEET_X: 922, FEET_Y: 2255,
+  // Where that anchor lands on the canvas: centred, 61 px above the bottom edge (behind the name).
+  // If the body leans or an arm sticks out, nudge AT_X until the head and torso look centred.
+  AT_X: 540, AT_Y: 1289,
+};
+// ===== end CONFIG =====
+document.getElementById('kid').dataset.put = [CONFIG.SCALE, CONFIG.FEET_X, CONFIG.FEET_Y, CONFIG.AT_X, CONFIG.AT_Y].join(',');
+
+window.FACES = ['900 100px "Archivo"', '600 100px "Archivo"'];
+window.afterFit = () => {
+  // every row takes the smallest fitted size, so all three share one cap height and the widest row spans 1000 px
+  const rows = [...document.querySelectorAll('.stack .w')];
+  const s = Math.min(...rows.map((r) => parseFloat(r.style.fontSize))) + 'px';
+  rows.forEach((r) => { r.style.fontSize = s; });
+  const n = document.getElementById('name'); n.style.top = (1350 - 74 - n.offsetHeight) + 'px';
+};
+</script>
+<script src="fit.js"></script>
+</body></html>

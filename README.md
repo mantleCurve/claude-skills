@@ -11,6 +11,7 @@ Reusable skills for [Claude Code](https://claude.com/claude-code). Each skill li
 | [`seo-skill`](skills/seo-skill) | Implement SEO/AEO-ready sites and CMS editors: nested services and locations, metadata, OG/X cards, schema, AI draft editing, mobile performance, and a tested audit-evidence gate. |
 | [`travel-journey-site`](skills/travel-journey-site) | Turns a trip (a few places, or a poster) into a deployed, data-driven itinerary site: map, trains, flights, fares, hour-aware ride estimates, traffic, weather, air quality, budget, bookings. Reference build: https://mantlecurve.github.io/agra-delhi-varanasi-journey/ |
 | [`prototyping-typeface-from-prd`](skills/prototyping-typeface-from-prd) | Designs a typeface from a brief: a 22-section font PRD with numeric metrics, sample glyphs as stroke skeletons on a 1000 UPM grid, proof sheets reviewed at every weight, a specimen page, and OTF/WOFF prototypes with an editable type tester. |
+| [`cutout-type-posters`](skills/cutout-type-posters) | Turns one photo of a person into premium 4:5 Instagram posts: on-device subject cutout (Apple Vision), clean grade, bold uppercase type fitted to exact widths, four proven templates (stepped strips, colour block, Swiss grid, number balloon), a 100-style catalogue, batch workflow for many variations, and headless-Chrome 2160×2700 renders with contact sheets. macOS. |
 | [`unexpected-accent-palette`](skills/unexpected-accent-palette) | Turns a two-colour base pair into a memorable palette with one hue-distant, high-chroma accent: OKLCH hue/chroma checks, ranked accent suggestions, light/dark tokens with computed WCAG contrast, a side-by-side HTML preview, and accent-area measurement on screenshots. |
 
 ## Install
@@ -53,7 +54,23 @@ The skill drives a few tools from inside Claude Code:
   (`npx playwright install chromium`) for the headless checks
 - Network access: Open-Meteo (weather, air quality), OpenStreetMap tiles, Google Fonts
 
+### Requirements for `cutout-type-posters`
+
+- macOS 14+ with Swift (Xcode Command Line Tools) for the on-device Apple Vision subject cutout
+- `ffmpeg` for grading, masks and JPEG export (no `drawtext` needed)
+- Google Chrome (headless) for rendering; override the path with `$CHROME`
+- Network access: Google Fonts
+
 ## Use
+
+For photo posters:
+
+```
+/cutout-type-posters make this photo a premium 4:5 birthday post, uppercase only — then give me 20 different styles
+```
+
+Claude cuts the subject out on your Mac, grades the photo, builds the layouts from the templates,
+renders 2160×2700 PNG/JPG files and checks every one before showing a contact sheet.
 
 For episode downloads, trim tests, and chaptered compilations:
 

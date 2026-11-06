@@ -1,0 +1,10 @@
+/* Shared by every template. The poster is one 1080x1350 CSS px canvas (4:5); render.sh shoots it at 2x.
+   Fonts are linked by each template, so a template only downloads the faces it uses. */
+html, body { margin: 0; padding: 0; }
+.c { position: relative; width: 1080px; height: 1350px; overflow: hidden; text-transform: uppercase; }
+.abs { position: absolute; }
+/* text sized by fit.js: one unbroken line, tight leading */
+.fit { white-space: nowrap; line-height: .8; }
+/* small wide-tracked labels (needs Archivo linked by the template) */
+.micro { font-family: "Archivo", sans-serif; font-weight: 600; font-stretch: 112%; font-size: 13px; letter-spacing: .22em; }
+img { display: block; max-width: none; }

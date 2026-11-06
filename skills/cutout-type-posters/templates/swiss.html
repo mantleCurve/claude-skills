@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  SWISS: white page, a waist-up colour crop in a wide box at the top, a red tag, three full-width lines of
+  wide black type with one red word, a rule, and a four-column fact grid.
+  Asset:  assets/clean.png  (from prep.sh)
+  Copy (all set in uppercase):
+    {{HEADLINE_1}} {{NUMBER}}       line 1, the number in red, e.g. HAPPY 5TH
+    {{HEADLINE_2}}                  line 2, e.g. BIRTHDAY
+    {{NAME}}                        line 3, e.g. MAYA
+    {{LABEL_TAG}}                   the red tag on the photo, e.g. NO. 05
+    {{FACT_1_LABEL}} {{FACT_1}}     four grey-label / value pairs, e.g. NAME / MAYA, AGE / FIVE,
+    ... {{FACT_4_LABEL}} {{FACT_4}}  SINCE / JUN 2021, ISSUE / JUN 2026
+  Photo fit: edit CONFIG in the first script below.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=block">
+<link rel="stylesheet" href="base.css">
+<style>
+  .c { background: #FFFFFF; color: #0D0D0D; }
+  .ph { left: 48px; top: 48px; width: 984px; height: 640px; overflow: hidden; }
+  .tag { left: 64px; top: 64px; background: #FF2B1C; color: #fff; padding: 8px 12px 7px; }
+  .type { left: 48px; top: 724px; width: 984px; }
+  .t { display: block; font-family: "Archivo"; font-weight: 900; font-stretch: 125%; line-height: .78; margin-bottom: 14px; }
+  .red { color: #FF2B1C; }
+  .rule { left: 48px; right: 48px; height: 2px; background: #0D0D0D; }
+  .grid { left: 48px; right: 48px; display: grid; grid-template-columns: repeat(4, 1fr); }
+  .grid b { display: block; font-weight: 600; color: #8a8a8a; margin-bottom: 8px; }
+</style></head>
+<body><div class="c">
+  <div class="abs ph"><img id="photo" src="assets/clean.png" data-cover></div>
+  <div class="abs tag micro">{{LABEL_TAG}}</div>
+  <div class="abs type" id="type">
+    <span class="t fit" data-fit="984">{{HEADLINE_1}} <span class="red">{{NUMBER}}</span></span>
+    <span class="t fit" data-fit="984">{{HEADLINE_2}}</span>
+    <span class="t fit" data-fit="984">{{NAME}}</span>
+  </div>
+  <div class="abs rule" id="rule"></div>
+  <div class="abs grid micro" id="grid">
+    <div><b>{{FACT_1_LABEL}}</b>{{FACT_1}}</div><div><b>{{FACT_2_LABEL}}</b>{{FACT_2}}</div><div><b>{{FACT_3_LABEL}}</b>{{FACT_3}}</div><div><b>{{FACT_4_LABEL}}</b>{{FACT_4}}</div>
+  </div>
+</div>
+<script>
+// ===== CONFIG: the only photo-specific numbers. Find the face box by eye on clean.png (photo px). =====
+const CONFIG = {
+  // Photo px -> CSS px. Make the face about 300 px tall in the 984x640 box:
+  //   SCALE = 300 / (faceBottom - faceTop)
+  SCALE: 1.25,
+  // Centre of the face in photo px. It lands at (500, 294) in the box: a touch right of centre and a little
+  // above the middle, which leaves room for shoulders and chest below. The photo must cover the whole box;
+  // a gap is reported as a render error (raise SCALE if so).
+  FACE_X: 930, FACE_Y: 640,
+};
+// ===== end CONFIG =====
+document.getElementById('photo').dataset.put = [CONFIG.SCALE, CONFIG.FACE_X, CONFIG.FACE_Y, 500, 294].join(',');
+
+window.FACES = ['900 100px "Archivo"', '600 100px "Archivo"'];
+window.afterFit = () => {
+  const t = document.getElementById('type'), r = t.getBoundingClientRect();
+  document.getElementById('rule').style.top = (r.bottom + 14) + 'px';
+  document.getElementById('grid').style.top = (r.bottom + 36) + 'px';
+};
+</script>
+<script src="fit.js"></script>
+</body></html>

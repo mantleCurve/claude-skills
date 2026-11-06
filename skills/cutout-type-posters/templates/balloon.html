@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+  BALLOON: off-white void, a small flush-left headline, a huge red number floating like a balloon, and the
+  cut-out subject standing on a soft floor shadow holding its string. The string runs from a small knot at
+  the number's lowest ink point to inside the subject's fist, drawn BEHIND the subject so the hand closes over it.
+  Asset:  assets/cutout.png  (from prep.sh)
+  Copy (all set in uppercase):
+    {{NAME}}                         small tracked label top-left, e.g. MAYA
+    {{HEADLINE_1}} {{HEADLINE_2}}    two flush-left lines, one size, e.g. HAPPY / BIRTHDAY
+    {{NUMBER}}                       the balloon, e.g. 5 (two digits: lower NUMBER_SIZE and NUMBER_LEFT in CONFIG)
+  Photo fit: edit CONFIG in the first script below.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=block">
+<link rel="stylesheet" href="base.css">
+<style>
+  .c { background: #FBFBF9; color: #161616; font-family: "Space Grotesk"; }
+  .m { font-weight: 500; font-size: 15px; letter-spacing: .34em; }
+  .hb { left: 52px; top: 112px; font-weight: 700; line-height: .86; letter-spacing: -.02em; }
+  .hb span { display: block; white-space: nowrap; }
+  .num { color: #FF2A17; font-weight: 700; line-height: .8; white-space: nowrap; }
+  .str { left: 0; top: 0; width: 1080px; height: 1350px; }
+  .shadow { width: 330px; height: 34px; border-radius: 50%; background: rgba(0,0,0,.16); filter: blur(10px); }
+</style></head>
+<body><div class="c">
+  <div class="abs m" style="left:56px; top:56px">{{NAME}}</div>
+  <div class="abs hb" id="hb"><span class="fit" data-fit="520">{{HEADLINE_1}}</span><span class="fit" data-fit="520">{{HEADLINE_2}}</span></div>
+
+  <!-- string sits behind the subject so the hand closes over its end, and behind the number so it meets the knot cleanly -->
+  <svg class="abs str" viewBox="0 0 1080 1350" fill="none">
+    <path id="s" stroke="#161616" stroke-width="2.2" stroke-linecap="round"/>
+    <path id="knot" fill="#E0200F"/>
+  </svg>
+  <div class="abs num" id="num">{{NUMBER}}</div>
+
+  <div class="abs shadow" id="shadow"></div>
+  <img class="abs" id="kid" src="assets/cutout.png">
+</div>
+<script>
+// ===== CONFIG: the only photo-specific numbers. Read subject.json (from prep.sh); find the hand by eye. =====
+const CONFIG = {
+  // Photo px -> CSS px. Make the subject about 910 px tall:   SCALE = 910 / (subject.y2 - subject.y1)
+  SCALE: .5,
+  // The anchor point in photo px: bottom-centre of the subject box.
+  //   FEET_X = (subject.x1 + subject.x2) / 2,   FEET_Y = subject.y2
+  FEET_X: 922, FEET_Y: 2255,
+  // Where the feet stand on the canvas. The soft floor shadow is drawn around this point.
+  AT_X: 480, AT_Y: 1250,
+  // Centre of the fist that holds the string, in photo px: the hand on the number's side, found by eye on
+  // clean.png. The string ends exactly here, under the hand, so pick a point well inside the fist.
+  HAND_X: 1168, HAND_Y: 1503,
+  // The number: left edge, top and font size in CSS px. One digit: 610 / 96 / 600. Two digits: 610 / 150 / 400.
+  // It is shrunk automatically if its ink would run past 40 px from the right edge; if it would touch the
+  // headline, the render shows an error instead.
+  NUMBER_LEFT: 610, NUMBER_TOP: 96, NUMBER_SIZE: 600,
+};
+// ===== end CONFIG =====
+(() => {
+  const C = CONFIG;
+  document.getElementById('kid').dataset.put = [C.SCALE, C.FEET_X, C.FEET_Y, C.AT_X, C.AT_Y].join(',');
+  Object.assign(document.getElementById('shadow').style, { left: (C.AT_X - 150) + 'px', top: (C.AT_Y - 14) + 'px' });
+  Object.assign(document.getElementById('num').style,
+    { left: C.NUMBER_LEFT + 'px', top: C.NUMBER_TOP + 'px', fontSize: C.NUMBER_SIZE + 'px' });
+})();
+
+window.FACES = ['700 100px "Space Grotesk"', '500 12px "Space Grotesk"'];
+window.afterFit = () => {
+  const C = CONFIG;
+  // both headline lines take the smaller fitted size, so the block is flush-left and one size
+  const [a, b] = document.querySelectorAll('#hb .fit');
+  const s = Math.min(parseFloat(a.style.fontSize), parseFloat(b.style.fontSize)) + 'px';
+  a.style.fontSize = b.style.fontSize = s;
+
+  // the number's ink, measured from the font's own metrics (not the line box)
+  const num = document.getElementById('num'), text = num.textContent.trim().toUpperCase();
+  const ctx = document.createElement('canvas').getContext('2d');
+  const measure = (fs) => { ctx.font = `700 ${fs}px "Space Grotesk"`; return ctx.measureText(text); };
+  let fs = C.NUMBER_SIZE, m = measure(fs);
+  const room = 1080 - 40 - C.NUMBER_LEFT;
+  if (m.actualBoundingBoxRight > room) { fs = Math.floor(fs * room / m.actualBoundingBoxRight); num.style.fontSize = fs + 'px'; m = measure(fs); }
+  const lineH = .8 * fs, contentH = m.fontBoundingBoxAscent + m.fontBoundingBoxDescent;
+  const baseline = num.offsetTop + (lineH - contentH) / 2 + m.fontBoundingBoxAscent;
+  const hbRight = Math.max(...[a, b].map((el) => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().right; }));
+  if (num.offsetLeft - m.actualBoundingBoxLeft < hbRight + 32)
+    document.body.dataset.error = `the number overlaps the headline (its ink starts at x ${Math.round(num.offsetLeft - m.actualBoundingBoxLeft)}, ` +
+      `the headline ends at x ${Math.round(hbRight)}): raise NUMBER_LEFT or lower NUMBER_SIZE in CONFIG`;
+  const x0 = num.offsetLeft + (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2;   // ink centre
+  const y0 = baseline + m.actualBoundingBoxDescent;                                     // lowest red pixel
+
+  // knot: a small tied nub just under the number, overlapping its edge by 3 px
+  const k = 13;
+  document.getElementById('knot').setAttribute('d',
+    `M ${x0 - k} ${y0 - 3} L ${x0 + k} ${y0 - 3} L ${x0 + 4} ${y0 + 14} L ${x0 - 4} ${y0 + 14} Z`);
+
+  // string from the knot to inside the fist (the hand is drawn over the last few px)
+  const hx = C.AT_X + (C.HAND_X - C.FEET_X) * C.SCALE, hy = C.AT_Y + (C.HAND_Y - C.FEET_Y) * C.SCALE;
+  const sx = x0, sy = y0 + 13;
+  // falls straight from the knot, then curves in to the hand from the number's side
+  const side = hx < sx ? 1 : -1;
+  document.getElementById('s').setAttribute('d',
+    `M ${sx} ${sy} C ${sx + 4 * side} ${sy + 150}, ${hx + 70 * side} ${hy - 170}, ${hx} ${hy}`);
+};
+</script>
+<script src="fit.js"></script>
+</body></html>
